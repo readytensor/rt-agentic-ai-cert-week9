@@ -14,18 +14,15 @@ This week focuses on production testing for agentic AI systems. You'll learn to 
 
 <br>
 
- <p align="center"><strong>Welcome to Week 9 of the Agentic AI Developer Certification Program!</strong</p>
- 
- 
- Congratulations — you’ve made it to **Module 3: Real-World Readiness**.
- 
- Until now, you’ve focused on what your agentic systems can do: retrieve information, coordinate roles, use tools, and reason through complex tasks. You’ve built some powerful prototypes.
- 
- But building for **production** is a different game.
- 
- This module is about moving from “It works in my notebook” to **“It works every time — even in the real world.”**
- 
- ---
+Congratulations — you’ve made it to **Module 3: Real-World Readiness**.
+
+Until now, you’ve focused on what your agentic systems can do: retrieve information, coordinate roles, use tools, and reason through complex tasks. You’ve built some powerful prototypes.
+
+But building for **production** is a different game.
+
+This module is about moving from “It works in my notebook” to **“It works every time — even in the real world.”**
+
+---
 
 --DIVIDER--
 
