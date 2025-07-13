@@ -566,7 +566,7 @@ Use them as needed — no need to memorize them all upfront. Once you’ve hit y
 
 --DIVIDER--
 
-# Configuring pytest with `pytest.ini`
+# Configuring pytest with pytest.ini
 
 Once your test suite grows or you're working in a team (or a CI pipeline), it helps to have some default settings baked into your project. That’s where `pytest.ini` comes in.
 
@@ -636,7 +636,7 @@ Good tests don’t just validate code — they make your project more maintainab
 
 --DIVIDER--
 
-## What's Next?
+# What's Next?
 
 You’ve now got the basics of `pytest` under your belt — from writing simple test functions to using fixtures, markers, and parameterization.
 
