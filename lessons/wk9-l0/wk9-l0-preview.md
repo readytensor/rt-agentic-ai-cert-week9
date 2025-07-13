@@ -44,10 +44,11 @@ It’s not just about _catching bugs_ — it’s about preventing **regressions*
 This week is about designing systems that **don’t safe, secure, and reliable.**
 
 - **Lesson 1**: Learn what production-grade testing really means, why it matters, and how to think about reliability from both a software and AI perspective.
-- **Lessons 2a–2d**: Write unit, integration, system, and performance tests using `pytest` to validate your full pipeline — not just one-off prompts.
+- **Lessons 2a–2b**: Write unit, integration, system, and performance tests using `pytest` to validate your full pipeline — not just one-off prompts.
 - **Lesson 3**: Strengthen your system’s defenses with application-layer security principles, based on the OWASP Top 10 for LLMs.
 - **Lesson 4**: Test for safety, ethics, and alignment — because “working” isn’t the same as “responsible.”
 - **Lessons 5–6**: Add runtime guardrails and scan for risks using Guardrails and Giskard.
+- **Lesson 7**: Put it all together in a case study — write and run real tests on your multi-agent A3 system from Module 2.
 
 By the end of this week, you’ll be able to:
 
