@@ -43,10 +43,11 @@ It’s not just about _catching bugs_ — it’s about preventing **regressions*
 
 This week is about designing systems that **don’t safe, secure, and reliable.**
 
-- **Lessons 1a–1d**: Write unit, integration, and performance tests using `pytest` to validate your full pipeline, not just one-off prompts.
-- **Lesson 2**: Test for safety, ethics, and alignment - because “working” isn’t the same as “responsible.”
-- **Lessons 3–4**: Add guardrails, validate structured outputs, and scan for bias or failure risks using Guardrails and Giskard.
-- **Lesson 5**: Explore red teaming: the practice of deliberately stress-testing your system to reveal blind spots.
+- **Lesson 1**: Learn what production-grade testing really means, why it matters, and how to think about reliability from both a software and AI perspective.
+- **Lessons 2a–2d**: Write unit, integration, system, and performance tests using `pytest` to validate your full pipeline — not just one-off prompts.
+- **Lesson 3**: Strengthen your system’s defenses with application-layer security principles, based on the OWASP Top 10 for LLMs.
+- **Lesson 4**: Test for safety, ethics, and alignment — because “working” isn’t the same as “responsible.”
+- **Lessons 5–6**: Add runtime guardrails and scan for risks using Guardrails and Giskard.
 
 By the end of this week, you’ll be able to:
 
