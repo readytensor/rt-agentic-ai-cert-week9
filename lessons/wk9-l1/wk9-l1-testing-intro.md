@@ -1,5 +1,14 @@
 ![AAIDC-wk9-l1-why-testing-is-core.jpeg](AAIDC-wk9-l1-why-testing-is-core.jpeg)
 
+--DIVIDER--
+
+---
+
+[🏠 Home - All Lessons](https://app.readytensor.ai/hubs/ready_tensor_certifications)
+
+[⬅️ Previous - Week 9 Preview](https://app.readytensor.ai/publications/h4GLp8hyNZDt)
+[➡️ Next - Getting started with pytest](https://app.readytensor.ai/publications/cpoAQfEZCcmi)
+
 ---
 
 --DIVIDER--
@@ -206,6 +215,13 @@ We’ll show you how to:
 
 Let’s get into it.
 
+--DIVIDER--
+
 ---
 
---DIVIDER--
+[🏠 Home - All Lessons](https://app.readytensor.ai/hubs/ready_tensor_certifications)
+
+[⬅️ Previous - Week 9 Preview](https://app.readytensor.ai/publications/h4GLp8hyNZDt)
+[➡️ Next - Getting started with pytest](https://app.readytensor.ai/publications/cpoAQfEZCcmi)
+
+---
