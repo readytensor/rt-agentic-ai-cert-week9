@@ -640,8 +640,10 @@ Good tests don’t just validate code — they make your project more maintainab
 
 You’ve now got the basics of `pytest` under your belt — from writing simple test functions to using fixtures, markers, and parameterization.
 
-In the next lesson, we’ll focus on writing **unit tests** for specific components in your agentic system. You’ll learn how to isolate functions, validate their behavior, and structure your tests for clarity and maintainability — even when working with tools, memory layers, and LangGraph nodes.
+In the next lesson, we’ll explore how to apply these tools to agentic systems. You’ll learn how to write **unit tests** for individual components, **integration tests** for multi-step workflows, and how to perform **performance checks** to catch bottlenecks before they cause problems.
 
-Testing is how we build trust in our code. Unit testing is where that trust begins.
+In agentic systems, testing isn't just about logic — it’s about dealing with **non-deterministic outputs** from language models, where the same input can produce different results. That makes testing trickier, but even more essential.
 
-Let’s dive in.
+We’ll show you how to build confidence despite the variability — across tools, memory layers, prompts, and control logic.
+
+Let’s get started.
