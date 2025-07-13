@@ -1,5 +1,14 @@
 ![AAIDC-wk9-l0-wk9-preview.jpeg](AAIDC-wk9-l0-wk9-preview.jpeg)
 
+--DIVIDER--
+
+---
+
+[🏠 Home - All Lessons](https://app.readytensor.ai/hubs/ready_tensor_certifications)
+
+[⬅️ Previous - Project 2 Submission Guidelines](https://app.readytensor.ai/publications/Vyezy1rDg6K3)
+[➡️ Next - Production Testing Overview](https://app.readytensor.ai/publications/Os3lVD6k6e3R)
+
 ---
 
 --DIVIDER--
@@ -11,8 +20,6 @@ This week focuses on production testing for agentic AI systems. You'll learn to 
 ---
 
 --DIVIDER--
-
-<br>
 
 Congratulations — you’ve made it to **Module 3: Real-World Readiness**.
 
@@ -41,7 +48,7 @@ It’s not just about _catching bugs_ — it’s about preventing **regressions*
 
 # What’s in store this week?
 
-This week is about designing systems that **don’t safe, secure, and reliable.**
+This week is about making your systems **safe, secure, and reliable**.
 
 - **Lesson 1**: Learn what production-grade testing really means, why it matters, and how to think about reliability from both a software and AI perspective.
 - **Lessons 2a–2b**: Write unit, integration, system, and performance tests using `pytest` to validate your full pipeline — not just one-off prompts.
@@ -58,5 +65,14 @@ By the end of this week, you’ll be able to:
 
 Your project is no longer just a demo.
 It’s a practical, real-world application. And this is how you make it production-ready.
+
+--DIVIDER--
+
+---
+
+[🏠 Home - All Lessons](https://app.readytensor.ai/hubs/ready_tensor_certifications)
+
+[⬅️ Previous - Project 2 Submission Guidelines](https://app.readytensor.ai/publications/Vyezy1rDg6K3)
+[➡️ Next - Production Testing Overview](https://app.readytensor.ai/publications/Os3lVD6k6e3R)
 
 ---
