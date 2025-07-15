@@ -8,8 +8,6 @@ This repository contains lesson materials, code examples, and evaluation scripts
 
 ## What You'll Learn
 
-## What You'll Learn
-
 - Why traditional testing approaches fall short for dynamic, agentic AI systems
 - Essential testing methodologies specifically designed for AI agents and multi-agent systems
 - How to implement comprehensive unit testing for agentic components using **pytest**
