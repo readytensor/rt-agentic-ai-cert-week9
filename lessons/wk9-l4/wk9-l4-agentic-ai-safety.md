@@ -173,7 +173,7 @@ When making these decisions, it helps to think **hierarchically** — from the b
 
 Here’s a framework you can use to guide your thinking:
 
-![hierarchy-of-safety.jpeg](hierarchy-of-safety.jpeg)
+![hierarchy-of-safety.jpeg](hierarchy-of-safety-v2.jpeg)
 
 --DIVIDER--
 
