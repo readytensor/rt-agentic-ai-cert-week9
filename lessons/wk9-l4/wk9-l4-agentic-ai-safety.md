@@ -84,6 +84,8 @@ Just like classic ethical dilemmas (think: trolley problem), agentic systems som
 
 ![Trolley_Problem.png](Trolley_Problem.png)
 
+<p align="center"><a href="https://en.wikipedia.org/wiki/Trolley_problem">Image Source: Wikipedia</a></p>
+
 ---
 
 --DIVIDER--
