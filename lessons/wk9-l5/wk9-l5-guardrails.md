@@ -7,6 +7,7 @@
 [🏠 Home - All Lessons](https://app.readytensor.ai/hubs/ready_tensor_certifications)
 
 [⬅️ Previous - Agentic AI Safety and Alignment](https://app.readytensor.ai/publications/2I2CRYlJrUZJ)
+[➡️ Next - Giskard Tutorial](https://app.readytensor.ai/publications/4PVxbVYFrLVO)
 
 -----DIVIDER--
 
@@ -346,5 +347,6 @@ Here’s the basic flow:
  [🏠 Home - All Lessons](https://app.readytensor.ai/hubs/ready_tensor_certifications)  
  
  [⬅️ Previous - Agentic AI Safety and Alignment](https://app.readytensor.ai/publications/2I2CRYlJrUZJ)
+[➡️ Next - Giskard Tutorial](https://app.readytensor.ai/publications/4PVxbVYFrLVO) 
  
  ---
