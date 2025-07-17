@@ -68,8 +68,8 @@ Apply everything you've learned by implementing a complete testing suite for you
 1. **Clone the repository:**
 
    ```bash
-   git clone https://github.com/readytensor/rt-agentic-ai-cert-week7.git
-   cd rt-agentic-ai-cert-week7
+   git clone https://github.com/readytensor/rt-agentic-ai-cert-week9.git
+   cd rt-agentic-ai-cert-week9
    ```
 
 2. **Install dependencies:**
