@@ -2,6 +2,7 @@ langchain~=0.3.26
 langchain_groq~=0.3.2
 langchain_openai~=0.3.23
 langchain_community~=0.3.24
+langchain_tavily~=0.2.9
 python-dotenv~=1.1.0
 pyyaml~=6.0.2
 langgraph~=0.4.8
@@ -15,3 +16,6 @@ rapidfuzz>=3.13.0
 scikit-learn>=1.7.0
 pandas~=2.3.0
 pytest~=8.4.1
+spacy~=3.8.7
+https://github.com/explosion/spacy-models/releases/download/en_core_web_trf-3.8.0/en_core_web_trf-3.8.0-py3-none-any.whl 
+guardrails-ai~=0.6.6

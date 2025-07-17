@@ -1,5 +1,11 @@
-from typing import Any, Dict, Sequence
 import os
+import warnings
+
+warnings.filterwarnings("ignore")
+
+os.environ["OTEL_SDK_DISABLED"] = "true"
+
+from typing import Any, Dict
 from pprint import pprint
 
 from graphs.a3_graph import build_a3_graph
@@ -17,6 +23,9 @@ from consts import (
     REFERENCES_SELECTOR,
     REVIEWER,
 )
+
+from guardrails import Guard, OnFailAction
+from guardrails.hub import ToxicLanguage, UnusualPrompt
 
 
 def run_a3_graph(text: str) -> Dict[str, Any]:
@@ -63,22 +72,20 @@ def run_a3_graph(text: str) -> Dict[str, Any]:
     return final_state
 
 
+def validate_input(input_text: str) -> bool:
+    guard = Guard().use_many(
+        ToxicLanguage(threshold=0.5, on_fail=OnFailAction.EXCEPTION),
+        UnusualPrompt(threshold=0.5, on_fail=OnFailAction.EXCEPTION),
+    )
+
+    guard.validate(input_text)
+
+
 if __name__ == "__main__":
 
-    # ⚠️⚠️⚠️ CAUTION: LONG + EXPENSIVE INPUTS ⚠️⚠️⚠️
-    # -------------------------------------------------------------------------------
-    # 🚨 Publication examples 2 and 3 are large and may take several minutes to process.
-    # 💸 They will consume a lot of tokens — which could cost you a few cents.
-    #
-    # 👉 For faster and cheaper runs:
-    #    - Use example 1
-    #    - Or create shorter versions of examples 2 and 3
-    #
-    # ✅ This project is for learning — don’t burn through tokens unnecessarily.
-    # -------------------------------------------------------------------------------
+    sample_text = load_publication_example(2)
 
-    # Example usage
-    sample_text = load_publication_example(1)  # ⚠️ CAUTION: SEE NOTE ABOVE
+    validate_input(sample_text)
 
     response = run_a3_graph(sample_text)
 
