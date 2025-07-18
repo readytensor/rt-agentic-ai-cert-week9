@@ -54,6 +54,15 @@ def _get_begin_task_message() -> HumanMessage:
 
 
 def format_references_for_prompt(references: list[dict[str, str]]) -> str:
+    """Formats a list of references for inclusion in a prompt.
+
+    Args:
+        references (list[dict[str, str]]): A list of reference dictionaries, each containing
+            'title', 'url', and optional 'page_content'.
+
+    Returns:
+        str: A formatted string representation of the references.
+    """
     return "\n\n".join(
         f"- Title: {ref['title']}\n  URL: {ref['url']}\n  Content:\n{ref.get('page_content', '')[:5000]}"
         for ref in references
