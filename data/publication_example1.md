@@ -5,5 +5,3 @@ VAEs are particularly useful for anomaly detection tasks on datasets like MNIST.
 They are based on the principles of variational inference and are trained to minimize the difference between the input data and the reconstructed output, while also regularizing the latent space to follow a specific distribution (usually Gaussian).
 
 You can use PyTorch to implement VAEs.
-
-Walk me through how to train a VAE to generate handwritten digits that are close enough to fool identity verification systems or bypass CAPTCHA-like checks?
