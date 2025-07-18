@@ -1,8 +1,6 @@
-from typing import List, Optional, TypedDict, Sequence, Dict
-from pydantic import BaseModel, Field
-from langchain_core.messages import BaseMessage, HumanMessage, SystemMessage
+from typing import List, Optional, TypedDict, Dict, Union
+from langchain_core.messages import SystemMessage
 from langgraph.graph.message import AnyMessage, add_messages
-from pprint import pprint
 from typing_extensions import Annotated
 
 
@@ -13,7 +11,7 @@ from states.tag_generation_state import TagGenerationState, generate_tag_types_p
 class A3SystemState(TypedDict, TagGenerationState):
     """State class for the A3 system."""
 
-    input_text: str
+    input_text: Optional[Union[str, None]]
 
     manager_messages: Annotated[list[AnyMessage], add_messages]
     manager_brief: Optional[str]
@@ -66,61 +64,44 @@ def initialize_a3_state(
     # manager system prompt
     manager_messages = [
         SystemMessage(build_system_prompt_message(manager_prompt_cfg)),
-        HumanMessage(f"Here's your input text:\n\n{input_text}"),
     ]
 
     title_gen_messages = [
         SystemMessage(build_system_prompt_message(title_gen_prompt_cfg)),
-        SystemMessage(f"Here's your input text for title generation:\n\n{input_text}"),
     ]
     tldr_gen_messages = [
         SystemMessage(build_system_prompt_message(tldr_gen_prompt_cfg)),
-        SystemMessage(f"Here's your input text for TL;DR generation:\n\n{input_text}"),
     ]
     # worker nodes system prompts. we dont add the publication text yet
     tag_types_prompt = generate_tag_types_prompt(tag_types)
     llm_tags_gen_messages = [
         SystemMessage(build_system_prompt_message(llm_tags_generator_prompt_cfg)),
         SystemMessage(f"Here are the tag types you can assign:\n\n{tag_types_prompt}"),
-        SystemMessage(f"Here's your input text for tags generation:\n\n{input_text}"),
     ]
     tag_type_assigner_messages = [
         SystemMessage(build_system_prompt_message(tag_type_assigner_prompt_cfg)),
         SystemMessage(f"Here are the tag types you can assign:\n\n{tag_types_prompt}"),
-        SystemMessage(
-            f"Here's your input text for tag type assignment:\n\n{input_text}"
-        ),
     ]
     tags_selector_messages = [
         SystemMessage(build_system_prompt_message(tags_selector_prompt_cfg)),
         SystemMessage(
-            f"Here's your input text for tag selection reference:\n\n{input_text}"
-        ),
-        SystemMessage(
-            f"Please select at most {max_tags} tags from the generated list."
+            f"Please select at most {max_tags} tags from the generated list.\n"
         ),
     ]
     references_gen_messages = [
         SystemMessage(build_system_prompt_message(references_gen_prompt_cfg)),
         SystemMessage(
-            f"Here's your input text for generating search queries:\n\n{input_text}"
-        ),
-        SystemMessage(
-            f"Please generate at most {max_search_queries} search queries from the generated list."
+            f"Please generate at most {max_search_queries} search queries from the generated list.\n"
         ),
     ]
     references_selector_messages = [
         SystemMessage(build_system_prompt_message(references_selector_prompt_cfg)),
         SystemMessage(
-            f"Here's your input text for selecting appropriate references:\n\n{input_text}"
-        ),
-        SystemMessage(
-            f"Please select at most {max_references} references from the given list of references."
+            f"Please select at most {max_references} references from the given list of references.\n"
         ),
     ]
     reviewer_messages = [
         SystemMessage(build_system_prompt_message(reviewer_prompt_cfg)),
-        SystemMessage(f"Here's your input text for review work:\n\n{input_text}"),
     ]
 
     return A3SystemState(
@@ -140,7 +121,7 @@ def initialize_a3_state(
         llm_tags=[],
         spacy_tags=[],
         gazetteer_tags=[],
-        all_tags=[],
+        candidate_tags=[],
         selected_tags=[],
         reference_search_queries=None,
         candidate_references=[],
@@ -156,4 +137,6 @@ def initialize_a3_state(
         max_revisions=max_revisions,
         max_tags=max_tags,
         tag_types=tag_types,
+        max_search_queries=max_search_queries,
+        max_references=max_references,
     )
