@@ -1,8 +1,7 @@
 from typing import Any, Callable, Dict
 import spacy
 import re
-from typing import Dict, List, Optional
-from pydantic import BaseModel, Field
+from typing import Dict
 from langchain_core.messages import HumanMessage
 
 from states.tag_generation_state import TagGenerationState
@@ -171,6 +170,8 @@ def aggregate_tags_node(state: TagGenerationState) -> Dict[str, Any]:
     for tag in all_tags:
         name = tag.get("name", "").lower().strip()
         tag_type = tag.get("type", "").lower().strip()
+        if not name or not tag_type:
+            continue
         key = (name, tag_type)
         if key not in seen:
             seen.add(key)
