@@ -9,6 +9,7 @@ class ROLE(Enum):
 
 
 # NODES
+A3_INITIALIZER = "a3_initializer"
 MANAGER = "manager"
 LLM_TAGS_GENERATOR = "llm_tags_generator"
 SPACY_TAGS_GENERATOR = "spacy_tags_generator"
