@@ -122,9 +122,13 @@ def build_prompt_body(
         )
 
     if reasoning := prompt_config.get("reasoning_strategy"):
-        strategy_prompt = reasoning_strategies.get(reasoning, "")
-        if strategy_prompt:
-            prompt_parts.append(strategy_prompt.strip())
+        if reasoning not in reasoning_strategies:
+            raise ValueError(
+                f"Unknown reasoning strategy '{reasoning}'. "
+                f"Expected one of: {', '.join(reasoning_strategies.keys())}"
+            )
+        strategy_prompt = reasoning_strategies[reasoning].strip()
+        prompt_parts.append(strategy_prompt)
 
     if finalize:
         prompt_parts.append("Now perform the task as instructed above.")
