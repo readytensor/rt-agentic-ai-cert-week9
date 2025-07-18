@@ -43,10 +43,15 @@ def make_llm_tag_generator_node(
             .model_dump()["entities"]
         )
 
+        cleaned_tags = []
         for tag in tags:
-            tag["name"] = tag["name"].lower().strip()
-            tag["type"] = tag["type"].lower().strip()
-        return {LLM_TAGS: tags}
+            if not tag.get("name"):  # name is required
+                continue
+            name = tag["name"].lower().strip()
+            tag_type = tag.get("type", "").lower().strip()
+            cleaned_tags.append({"name": name, "type": tag_type})
+
+        return {LLM_TAGS: cleaned_tags}
 
     return llm_tag_generator_node
 
@@ -131,24 +136,40 @@ def make_tag_type_assigner_node(
     def tag_type_assigner_node(state: TagGenerationState) -> Dict[str, Any]:
         """
         Assigns tag types to extracted tags using the LLM.
+        - Skips tags with missing names.
+        - Returns early if there are no valid tags to process.
         """
-        spacy_tags = "\n".join(
-            [tag["name"].strip() for tag in state.get(SPACY_TAGS, [])]
-        )
-        messages = state[TAG_TYPE_ASSIGNER_MESSAGES]
+        raw_tags = state.get(SPACY_TAGS, [])
+        clean_names = [tag["name"].strip() for tag in raw_tags if tag.get("name")]
+
+
+        # No valid input? Return early
+        if not clean_names:
+            return {SPACY_TAGS: []}
+
+        messages = list(state[TAG_TYPE_ASSIGNER_MESSAGES])  # Avoid mutating original
         messages.append(
             HumanMessage(
-                content=f"Assign tag types to the following tags:\n {spacy_tags}\n"
+                content=f"Assign tag types to the following tags:\n {', '.join(clean_names)}"
             )
         )
-        updated_spacy_tags = (
+
+        updated_tags = (
             llm.with_structured_output(Entities)
             .invoke(messages)
             .model_dump()["entities"]
         )
-        for tag in updated_spacy_tags:
-            tag["type"] = tag["type"].lower().strip()
-        return {SPACY_TAGS: updated_spacy_tags}
+
+        cleaned_output = []
+        for tag in updated_tags:
+            if not tag.get("name"):
+                continue  # Skip tags without a name
+            cleaned_output.append({
+                "name": tag["name"].strip().lower(),
+                "type": tag.get("type", "").strip().lower(),
+            })
+
+        return {SPACY_TAGS: cleaned_output}
 
     return tag_type_assigner_node
 
@@ -213,10 +234,18 @@ def make_tag_selector_node(
         response = llm.with_structured_output(Entities).invoke(full_prompt).model_dump()
 
         tags = response.get("entities", [])
+        cleaned_tags = []
         for tag in tags:
-            tag["name"] = tag["name"].lower().strip()
-            tag["type"] = tag["type"].lower().strip()
+            name = tag.get("name")
+            if not name:
+                continue  # skip tag if name is missing or empty
+            cleaned_tags.append({
+                "name": name.lower().strip(),
+                "type": tag.get("type", "").lower().strip(),
+            })
 
-        return {SELECTED_TAGS: tags}
+        # Truncate if LLM returned too many
+        cleaned_tags = cleaned_tags[:max_tags]
+        return {SELECTED_TAGS: cleaned_tags}
 
     return tag_selector_node
