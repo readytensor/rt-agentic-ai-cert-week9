@@ -6,12 +6,12 @@ from states.a3_state import A3SystemState
 from llm import get_llm
 
 from consts import (
+    INPUT_TEXT,
     MANAGER_MESSAGES,
     MANAGER_BRIEF,
     SELECTED_REFERENCES,
     TITLE_GEN_MESSAGES,
     TITLE,
-    LLM_TAGS_GEN_MESSAGES,
     TLDR_GEN_MESSAGES,
     TLDR,
     TITLE_APPROVED,
@@ -32,11 +32,60 @@ from consts import (
     TITLE_FEEDBACK,
     TLDR_FEEDBACK,
     REFERENCES_FEEDBACK,
-    REFERENCES_GENERATOR,
+    MANAGER,
     TITLE_GENERATOR,
     TLDR_GENERATOR,
+    LLM_TAGS_GENERATOR,
+    TAG_TYPE_ASSIGNER,
+    TAGS_SELECTOR,
+    REFERENCES_GENERATOR,
+    REFERENCES_SELECTOR,
+    REVIEWER,
 )
 from .output_types import SearchQueries, References, ReviewOutput
+from .node_utils import (
+    _get_input_text_message,
+    _get_manager_brief_message,
+    _get_reviewer_message,
+    _get_begin_task_message,
+    format_references_for_prompt,
+)
+from states.a3_state import initialize_a3_state
+
+
+def make_state_initializer_node(a3_config):
+    def initializer_node(state: Dict[str, Any]) -> Dict[str, Any]:
+        input_text = state["input_text"]
+
+        return initialize_a3_state(
+            input_text=input_text,
+            manager_prompt_cfg=a3_config["agents"][MANAGER]["prompt_config"],
+            llm_tags_generator_prompt_cfg=a3_config["agents"][LLM_TAGS_GENERATOR][
+                "prompt_config"
+            ],
+            tag_type_assigner_prompt_cfg=a3_config["agents"][TAG_TYPE_ASSIGNER][
+                "prompt_config"
+            ],
+            tags_selector_prompt_cfg=a3_config["agents"][TAGS_SELECTOR][
+                "prompt_config"
+            ],
+            tag_types=a3_config["tag_types"],
+            max_tags=a3_config["max_tags"],
+            title_gen_prompt_cfg=a3_config["agents"][TITLE_GENERATOR]["prompt_config"],
+            tldr_gen_prompt_cfg=a3_config["agents"][TLDR_GENERATOR]["prompt_config"],
+            references_gen_prompt_cfg=a3_config["agents"][REFERENCES_GENERATOR][
+                "prompt_config"
+            ],
+            max_search_queries=a3_config["max_search_queries"],
+            references_selector_prompt_cfg=a3_config["agents"][REFERENCES_SELECTOR][
+                "prompt_config"
+            ],
+            max_references=a3_config["max_references"],
+            reviewer_prompt_cfg=a3_config["agents"][REVIEWER]["prompt_config"],
+            max_revisions=a3_config["max_revisions"],
+        )
+
+    return initializer_node
 
 
 def make_manager_node(llm_model: str) -> Callable[[Dict[str, Any]], Dict[str, Any]]:
@@ -50,18 +99,18 @@ def make_manager_node(llm_model: str) -> Callable[[Dict[str, Any]], Dict[str, An
         Manager node that processes the input text and generates messages.
         """
         # Prepare the input for the LLM
-        ai_response = llm.invoke(state[MANAGER_MESSAGES])
-        content = f"This is your manager's brief for your review:\n\n{ai_response.content.strip()}\n\n"
-        human_message = HumanMessage(content)
+        input_text = state[INPUT_TEXT]
+        if input_text is None or input_text.strip() == "":
+            raise ValueError("Input text cannot be empty or None.")
+        input_messages = [
+            *state[MANAGER_MESSAGES],
+            _get_input_text_message(state),
+            _get_begin_task_message(),
+        ]
+
+        ai_response = llm.invoke(input_messages)
         return {
-            MANAGER_MESSAGES: [ai_response],
-            MANAGER_BRIEF: content,
-            TITLE_GEN_MESSAGES: [human_message],
-            LLM_TAGS_GEN_MESSAGES: [human_message],
-            TLDR_GEN_MESSAGES: [human_message],
-            REFERENCES_GEN_MESSAGES: [human_message],
-            REFERENCES_SELECTOR_MESSAGES: [human_message],
-            REVIEWER_MESSAGES: [human_message],
+            MANAGER_BRIEF: ai_response.content.strip(),
         }
 
     return manager_node
@@ -77,7 +126,8 @@ def make_title_generator_node(
 
     def title_generator_node(state: A3SystemState) -> Dict[str, Any]:
         """
-        Title generator node that processes the input text and generates messages.
+        Title generator node that uses prompt configuration, manager brief, reviewer feedback,
+        and input text to generate a proposed publication title.
         """
         # Check if this component needs revision (skip if already approved)
         if state[TITLE_APPROVED] is True:
@@ -85,20 +135,17 @@ def make_title_generator_node(
             return {}
 
         print("🎯 Title Generator: Creating title...")
-        messages = state[TITLE_GEN_MESSAGES]
-        reviewer_message = HumanMessage(
-            f"Following is the review from your reviewer:\n\n {state.get(TITLE_FEEDBACK, "No feedback provided")}\n\n"
-        )
-        messages += [reviewer_message] + [
-            HumanMessage(
-                "Proceed with your title generation using latest feedback (if any)."
-            )
+        input_messages = [
+            *state[TITLE_GEN_MESSAGES],
+            _get_manager_brief_message(state),
+            _get_reviewer_message(state, TITLE_FEEDBACK),
+            _get_input_text_message(state),
+            _get_begin_task_message(),
         ]
-        ai_response = llm.invoke(messages)
+        ai_response = llm.invoke(input_messages)
         content = ai_response.content.strip()
 
         return {
-            TITLE_GEN_MESSAGES: [messages[-1], ai_response],
             TITLE: content,
             TITLE_FEEDBACK: "",
         }
@@ -123,20 +170,20 @@ def make_tldr_generator_node(
             print("📝 TL;DR Generator: Already approved, skipping...")
             return {}
         print("🎯 TL;DR Generator: Creating TL;DR...")
-        reviewer_message = HumanMessage(
-            "Following is the review from your reviewer:\n\n"
-            f"{state.get(TLDR_FEEDBACK, "No feedback provided")}\n\n"
-        )
-        messages = state[TLDR_GEN_MESSAGES] + [
-            reviewer_message,
-            HumanMessage(
-                "Proceed with your TL;DR generation using latest feedback (if any)."
-            ),
+        input_messages = [
+            *state[TLDR_GEN_MESSAGES],
+            _get_manager_brief_message(state),
+            _get_reviewer_message(state, TLDR_FEEDBACK),
+            _get_input_text_message(state),
+            _get_begin_task_message(),
         ]
-        ai_response = llm.invoke(messages)
+        ai_response = llm.invoke(input_messages)
         content = ai_response.content.strip()
 
-        return {TLDR_GEN_MESSAGES: [messages[-1], ai_response], TLDR: content}
+        return {
+            TLDR: content,
+            TLDR_FEEDBACK: "",
+        }
 
     return tldr_generator_node
 
@@ -159,18 +206,15 @@ def make_references_generator_node(
             return {}
 
         print("📚 References Generator: Extracting references...")
-        reviewer_message = HumanMessage(
-            "Following is the review from your reviewer:\n"
-            f"{state.get(REFERENCES_FEEDBACK, "No feedback provided")}\n"
-        )
-        messages = state[REFERENCES_GEN_MESSAGES] + [
-            reviewer_message,
-            HumanMessage(
-                "Proceed with your search query generation using latest feedback (if any)."
-            ),
-        ]
+        input_messages = [
+            *state[REFERENCES_GEN_MESSAGES],
+            _get_manager_brief_message(state),
+            _get_reviewer_message(state, REFERENCES_FEEDBACK),
+            _get_input_text_message(state),
+            _get_begin_task_message(),
+        ]        
         try:
-            queries = llm.with_structured_output(SearchQueries).invoke(messages).queries
+            queries = llm.with_structured_output(SearchQueries).invoke(input_messages).queries
             print(f"✅ Queries to be executed: {queries}")
 
             search_results = []
@@ -192,20 +236,10 @@ def make_references_generator_node(
                 }
                 for search_result in search_results
                 if search_result["content"]  # Ensure content is not empty
-            ]
-
-            formatted_references = "\n\n".join(
-                f"- Title: {ref['title']}\n  URL: {ref['url']}\n  Content:\n{ref.get('page_content', '')[:5000]}"
-                for ref in candidate_references
-            )
-            message_to_selector = HumanMessage(
-                f"Here are the candidate references:\n\n{formatted_references}"
-            )
+            ]            
             return {
-                REFERENCES_GEN_MESSAGES: [messages[-1]],
                 REFERENCE_SEARCH_QUERIES: queries,
                 CANDIDATE_REFERENCES: candidate_references,
-                REFERENCES_SELECTOR_MESSAGES: [message_to_selector],
             }
         except Exception as e:
             print(f"❌ References extraction failed: {e}")
@@ -233,14 +267,25 @@ def make_references_selector_node(
             return {}
 
         print("📚 References Selector: Selecting references...")
+        candidate_references = state.get(CANDIDATE_REFERENCES, [])
+        if not candidate_references:
+            print("❌ No candidate references available to select from.")
+            return {}
+        formatted_references = format_references_for_prompt(candidate_references)
+        candidate_refs_message = HumanMessage(
+            f"Here are your candidate references to select from:\n\n{formatted_references}"
+        )
 
-        messages = state[REFERENCES_SELECTOR_MESSAGES] + [
-            HumanMessage(
-                "Proceed with your references selection using latest feedback (if any)."
-            ),
+        input_messages = [
+            *state[REFERENCES_SELECTOR_MESSAGES],
+            _get_manager_brief_message(state),
+            _get_reviewer_message(state, REFERENCES_FEEDBACK),
+            _get_input_text_message(state),
+            candidate_refs_message,
+            _get_begin_task_message(),
         ]
         selected_references = (
-            llm.with_structured_output(References).invoke(messages).references
+            llm.with_structured_output(References).invoke(input_messages).references
         )
         selected_references = [
             {
@@ -252,7 +297,6 @@ def make_references_selector_node(
         ]
         return {
             SELECTED_REFERENCES: selected_references,
-            REFERENCES_SELECTOR_MESSAGES: [messages[-1]],
         }
 
     return references_selector_node
@@ -290,10 +334,7 @@ def make_reviewer_node(
         title = state.get(TITLE, "Not generated")
         tldr = state.get(TLDR, "Not generated")
         selected_references = state.get(SELECTED_REFERENCES, [])
-        formatted_references = "\n".join(
-            f"- Title: {ref['title']}\n  URL: {ref['url']}\n  Content:\n{ref.get('page_content', '')[:5000]}"
-            for ref in selected_references
-        )
+        formatted_references = format_references_for_prompt(selected_references)
 
         # Build comprehensive input data for review
         review_input = f"""
@@ -370,7 +411,9 @@ def route_from_reviewer(
     state: A3SystemState,
 ) -> Literal["revision_dispatcher", "end"]:
     """
-    Conditional routing function that determines whether to dispatch revisions or end.
+    Determines whether any component requires revision.
+    If so, returns the list of components to revise.
+    Otherwise, routes to END.
     """
     needs_revision = state.get(NEEDS_REVISION, False)
 
