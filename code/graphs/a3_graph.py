@@ -3,6 +3,7 @@ from langgraph.graph import StateGraph, START, END
 
 
 from consts import (
+    A3_INITIALIZER,
     MANAGER,
     TLDR_GENERATOR,
     TITLE_GENERATOR,
@@ -11,8 +12,9 @@ from consts import (
     REVIEWER,
 )
 from states.a3_state import A3SystemState
-from graphs.tag_generation_graph import add_tag_generation_flow
+from code.graphs.tag_generation_graph import add_tag_generation_flow
 from nodes.a3_nodes import (
+    make_state_initializer_node,
     make_manager_node,
     make_title_generator_node,
     make_tldr_generator_node,
@@ -32,6 +34,14 @@ def build_a3_graph(a3_config: Dict[str, Any]) -> StateGraph:
 
     # -------------------------------------------------------------------------------
     # ADD NODES
+
+    # Add the initializer node
+    initializer_node = make_state_initializer_node(
+        a3_config=a3_config,
+    )
+    graph.add_node(A3_INITIALIZER, initializer_node)
+
+    # Add the manager node
     manager_node = make_manager_node(llm_model=a3_config["agents"][MANAGER]["llm"])
     graph.add_node(MANAGER, manager_node)
 
@@ -62,8 +72,9 @@ def build_a3_graph(a3_config: Dict[str, Any]) -> StateGraph:
 
     # -------------------------------------------------------------------------------
     # ADD EDGES AND FLOWS
+    graph.add_edge(START, A3_INITIALIZER)
 
-    graph.add_edge(START, MANAGER)
+    graph.add_edge(A3_INITIALIZER, MANAGER)
 
     graph.add_edge(MANAGER, TITLE_GENERATOR)
     graph.add_edge(MANAGER, TLDR_GENERATOR)
