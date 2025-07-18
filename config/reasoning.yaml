@@ -1,12 +1,12 @@
 reasoning_strategies:
-  CoT: |
+  cot: |
     Use this systematic approach to provide your response:
     1. Break down the problem into smaller steps
     2. Address each step systematically
     3. Show your reasoning for each step
     4. Then provide your final conclusion
 
-  ReAct: |
+  react: |
     Use this systematic approach to provide your response:
     1. Thought: What approaches could I take to solve this?
     2. Action: Choose and implement the best approach
@@ -17,7 +17,7 @@ reasoning_strategies:
 
     Then provide your final answer.
 
-  Self-Ask: |
+  self-ask: |
     Use this systematic approach to provide your response:
     1. Break the main question into smaller sub-questions.
     2. Answer each sub-question thoroughly.
