@@ -3,18 +3,16 @@
 tmp/
 temp.json
 
-# .env
-
-
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
+.pytest_cache/
 
-
+# API keys and secrets
+*.env
 
 # Environments
-.env
 .venv
 env/
 venv/
@@ -29,4 +27,3 @@ temp.py
 temp.csv
 test.py
 
-repo/
