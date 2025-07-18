@@ -9,7 +9,7 @@ from consts import (
     TAGS_AGGREGATOR,
     TAGS_SELECTOR,
 )
-from nodes.tag_generation import (
+from nodes.tag_generation_nodes import (
     make_llm_tag_generator_node,
     make_spacy_tag_generator_node,
     make_gazetteer_tag_generator_node,
