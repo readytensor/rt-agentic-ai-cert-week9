@@ -48,6 +48,8 @@ def make_llm_tag_generator_node(
             if not tag.get("name"):  # name is required
                 continue
             name = tag["name"].lower().strip()
+            if not name:
+                continue
             tag_type = tag.get("type", "").lower().strip()
             cleaned_tags.append({"name": name, "type": tag_type})
 
@@ -66,7 +68,13 @@ def make_spacy_tag_generator_node() -> Callable[[Dict[str, Any]], Dict[str, Any]
         """
         Extracts unique named entities from the input text using spaCy.
         """
-        doc = model(state[INPUT_TEXT])
+        input_text = state.get(INPUT_TEXT, "")
+
+        # Handle edge cases gracefully
+        if not input_text or not input_text.strip():
+            return {SPACY_TAGS: []}
+
+        doc = model(input_text)
         seen = set()
         entities = []
         for ent in doc.ents:
@@ -140,7 +148,12 @@ def make_tag_type_assigner_node(
         - Returns early if there are no valid tags to process.
         """
         raw_tags = state.get(SPACY_TAGS, [])
-        clean_names = [tag["name"].strip() for tag in raw_tags if tag.get("name")]
+        clean_names = [
+            tag["name"].strip()
+            for tag in raw_tags
+            if tag.get("name")
+            and tag["name"].strip()  # Also check if non-empty after strip
+        ]
 
         # No valid input? Return early
         if not clean_names:
@@ -190,10 +203,21 @@ def aggregate_tags_node(state: TagGenerationState) -> Dict[str, Any]:
     seen = set()
     deduped = []
     for tag in all_tags:
-        name = tag.get("name", "").lower().strip()
-        tag_type = tag.get("type", "").lower().strip()
+        # Handle None values by converting to string first
+        raw_name = tag.get("name")
+        raw_type = tag.get("type")
+
+        # Skip if either name or type is None/empty
+        if not raw_name or not raw_type:
+            continue
+
+        name = str(raw_name).lower().strip()
+        tag_type = str(raw_type).lower().strip()
+
+        # Skip if empty after conversion and stripping
         if not name or not tag_type:
             continue
+
         key = (name, tag_type)
         if key not in seen:
             seen.add(key)
@@ -240,10 +264,16 @@ def make_tag_selector_node(
             name = tag.get("name")
             if not name:
                 continue  # skip tag if name is missing or empty
+
+            # Fix: Handle None type values
+            tag_type = tag.get("type", "") or ""  # Convert None to empty string
+
             cleaned_tags.append(
                 {
-                    "name": name.lower().strip(),
-                    "type": tag.get("type", "").lower().strip(),
+                    "name": str(name)
+                    .lower()
+                    .strip(),  # Also defensive: convert to string
+                    "type": str(tag_type).lower().strip(),
                 }
             )
 
