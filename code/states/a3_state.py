@@ -19,6 +19,7 @@ from consts import (
     REVIEWER,
 )
 
+
 class A3SystemState(TypedDict, TagGenerationState):
     """State class for the A3 system."""
 

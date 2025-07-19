@@ -176,9 +176,11 @@ def make_references_generator_node(
             _get_reviewer_message(state, REFERENCES_FEEDBACK),
             _get_input_text_message(state),
             _get_begin_task_message(),
-        ]        
+        ]
         try:
-            queries = llm.with_structured_output(SearchQueries).invoke(input_messages).queries
+            queries = (
+                llm.with_structured_output(SearchQueries).invoke(input_messages).queries
+            )
             print(f"✅ Queries to be executed: {queries}")
 
             search_results = []
@@ -200,7 +202,7 @@ def make_references_generator_node(
                 }
                 for search_result in search_results
                 if search_result["content"]  # Ensure content is not empty
-            ]            
+            ]
             return {
                 REFERENCE_SEARCH_QUERIES: queries,
                 CANDIDATE_REFERENCES: candidate_references,

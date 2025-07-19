@@ -3,6 +3,7 @@ from pprint import pprint
 from langgraph.graph import StateGraph
 
 from graphs.a3_graph import A3System
+
 # from states.a3_state import initialize_a3_state
 from utils import load_publication_example, load_config
 from langgraph_utils import save_graph_visualization
@@ -18,7 +19,7 @@ from display_utils import print_a3_response
 
 #     # Build the graph
 #     graph = build_a3_graph(a3_config)
-#     # Add initial state to the graph    
+#     # Add initial state to the graph
 #     graph = graph.with_config(initial_state)
 #     save_graph_visualization(graph, graph_name="a3_system")
 #     return graph

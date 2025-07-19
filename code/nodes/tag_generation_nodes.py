@@ -142,7 +142,6 @@ def make_tag_type_assigner_node(
         raw_tags = state.get(SPACY_TAGS, [])
         clean_names = [tag["name"].strip() for tag in raw_tags if tag.get("name")]
 
-
         # No valid input? Return early
         if not clean_names:
             return {SPACY_TAGS: []}
@@ -164,10 +163,12 @@ def make_tag_type_assigner_node(
         for tag in updated_tags:
             if not tag.get("name"):
                 continue  # Skip tags without a name
-            cleaned_output.append({
-                "name": tag["name"].strip().lower(),
-                "type": tag.get("type", "").strip().lower(),
-            })
+            cleaned_output.append(
+                {
+                    "name": tag["name"].strip().lower(),
+                    "type": tag.get("type", "").strip().lower(),
+                }
+            )
 
         return {SPACY_TAGS: cleaned_output}
 
@@ -239,10 +240,12 @@ def make_tag_selector_node(
             name = tag.get("name")
             if not name:
                 continue  # skip tag if name is missing or empty
-            cleaned_tags.append({
-                "name": name.lower().strip(),
-                "type": tag.get("type", "").lower().strip(),
-            })
+            cleaned_tags.append(
+                {
+                    "name": name.lower().strip(),
+                    "type": tag.get("type", "").lower().strip(),
+                }
+            )
 
         # Truncate if LLM returned too many
         cleaned_tags = cleaned_tags[:max_tags]

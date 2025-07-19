@@ -49,42 +49,74 @@ class A3System:
         agents = self.config["agents"]
         # Build system messages
         manager_messages = [
-            SystemMessage(build_system_prompt_message(agents[MANAGER]["prompt_config"])),
+            SystemMessage(
+                build_system_prompt_message(agents[MANAGER]["prompt_config"])
+            ),
         ]
         title_gen_messages = [
-            SystemMessage(build_system_prompt_message(agents[TITLE_GENERATOR]["prompt_config"])),
+            SystemMessage(
+                build_system_prompt_message(agents[TITLE_GENERATOR]["prompt_config"])
+            ),
         ]
         tldr_gen_messages = [
-            SystemMessage(build_system_prompt_message(agents[TLDR_GENERATOR]["prompt_config"])),
+            SystemMessage(
+                build_system_prompt_message(agents[TLDR_GENERATOR]["prompt_config"])
+            ),
         ]
         # Tag-related messages
         tag_types_prompt = generate_tag_types_prompt(self.config["tag_types"])
 
         llm_tags_gen_messages = [
-            SystemMessage(build_system_prompt_message(agents[LLM_TAGS_GENERATOR]["prompt_config"])),
-            SystemMessage(f"Here are the tag types you can assign:\n\n{tag_types_prompt}"),
+            SystemMessage(
+                build_system_prompt_message(agents[LLM_TAGS_GENERATOR]["prompt_config"])
+            ),
+            SystemMessage(
+                f"Here are the tag types you can assign:\n\n{tag_types_prompt}"
+            ),
         ]
         tag_type_assigner_messages = [
-            SystemMessage(build_system_prompt_message(agents[TAG_TYPE_ASSIGNER]["prompt_config"])),
-            SystemMessage(f"Here are the tag types you can assign:\n\n{tag_types_prompt}"),
+            SystemMessage(
+                build_system_prompt_message(agents[TAG_TYPE_ASSIGNER]["prompt_config"])
+            ),
+            SystemMessage(
+                f"Here are the tag types you can assign:\n\n{tag_types_prompt}"
+            ),
         ]
         tags_selector_messages = [
-            SystemMessage(build_system_prompt_message(agents[TAGS_SELECTOR]["prompt_config"])),
-            SystemMessage(f"Please select at most {self.config['max_tags']} tags from the generated list.\n"),
+            SystemMessage(
+                build_system_prompt_message(agents[TAGS_SELECTOR]["prompt_config"])
+            ),
+            SystemMessage(
+                f"Please select at most {self.config['max_tags']} tags from the generated list.\n"
+            ),
         ]
         references_gen_messages = [
-            SystemMessage(build_system_prompt_message(agents[REFERENCES_GENERATOR]["prompt_config"])),
-            SystemMessage(f"Please generate at most {self.config['max_search_queries']} search queries from the generated list.\n"),
+            SystemMessage(
+                build_system_prompt_message(
+                    agents[REFERENCES_GENERATOR]["prompt_config"]
+                )
+            ),
+            SystemMessage(
+                f"Please generate at most {self.config['max_search_queries']} search queries from the generated list.\n"
+            ),
         ]
         references_selector_messages = [
-            SystemMessage(build_system_prompt_message(agents[REFERENCES_SELECTOR]["prompt_config"])),
-            SystemMessage(f"Please select at most {self.config['max_references']} references from the given list of references.\n"),
+            SystemMessage(
+                build_system_prompt_message(
+                    agents[REFERENCES_SELECTOR]["prompt_config"]
+                )
+            ),
+            SystemMessage(
+                f"Please select at most {self.config['max_references']} references from the given list of references.\n"
+            ),
         ]
         reviewer_messages = [
-            SystemMessage(build_system_prompt_message(agents[REVIEWER]["prompt_config"])),
+            SystemMessage(
+                build_system_prompt_message(agents[REVIEWER]["prompt_config"])
+            ),
         ]
         return A3SystemState(
-            input_text=None, # Will be overridden
+            input_text=None,  # Will be overridden
             manager_brief=None,
             manager_messages=manager_messages,
             title_gen_messages=title_gen_messages,
@@ -127,7 +159,9 @@ class A3System:
         graph = StateGraph(A3SystemState)
 
         # Add nodes
-        manager_node = make_manager_node(llm_model=self.config["agents"][MANAGER]["llm"])
+        manager_node = make_manager_node(
+            llm_model=self.config["agents"][MANAGER]["llm"]
+        )
         graph.add_node(MANAGER, manager_node)
 
         title_gen_node = make_title_generator_node(
@@ -150,7 +184,9 @@ class A3System:
         )
         graph.add_node(REFERENCES_SELECTOR, references_selector_node)
 
-        reviewer_node = make_reviewer_node(llm_model=self.config["agents"][REVIEWER]["llm"])
+        reviewer_node = make_reviewer_node(
+            llm_model=self.config["agents"][REVIEWER]["llm"]
+        )
         graph.add_node(REVIEWER, reviewer_node)
 
         # Add edges and flows
@@ -185,9 +221,5 @@ class A3System:
 
     def process_article(self, text: str):
         # Merge template with new input
-        runtime_state = {
-            **self.state_template,
-            "input_text": text
-        }
+        runtime_state = {**self.state_template, "input_text": text}
         return self.graph.invoke(runtime_state)
-
