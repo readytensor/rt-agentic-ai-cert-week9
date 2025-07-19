@@ -10,6 +10,7 @@ from paths import GAZETTEER_ENTITIES_FILE_PATH
 def gazetteer_config():
     return load_config(GAZETTEER_ENTITIES_FILE_PATH)
 
+
 @pytest.fixture
 def simple_tag_state():
     return TagGenerationState(
