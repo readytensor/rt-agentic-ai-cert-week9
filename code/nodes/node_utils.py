@@ -25,9 +25,9 @@ def _get_manager_brief_message(state: A3SystemState) -> HumanMessage:
     """
     Returns the manager message from the state.
     """
-    manager_brief = state.get(MANAGER_BRIEF, "No manager brief available.\n\n")
+    manager_brief = state.get(MANAGER_BRIEF, None)
     if manager_brief is None or manager_brief.strip() == "":
-        return HumanMessage("No manager brief available.")
+        return HumanMessage("No manager brief available.\n\n")
     return HumanMessage(
         f"This is your manager's brief for your review:\n\n {manager_brief}\n\n"
     )
@@ -37,7 +37,7 @@ def _get_reviewer_message(state: A3SystemState, recipient_key) -> HumanMessage:
     """
     Returns the reviewer message from the state.
     """
-    reviewer_feedback = state.get(recipient_key, "No feedback provided")
+    reviewer_feedback = state.get(recipient_key, None)
     if reviewer_feedback is None or reviewer_feedback.strip() == "":
         return HumanMessage("No reviewer feedback available.\n\n")
     return HumanMessage(
