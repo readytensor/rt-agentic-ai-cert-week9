@@ -1,21 +1,30 @@
-from states.tag_generation_state import initialize_tag_generation_state
-
-
-from states.tag_generation_state import initialize_tag_generation_state
 from langchain_core.messages import SystemMessage
 
+from states.tag_generation_state import initialize_tag_generation_state
 
-def test_initialize_tag_generation_state(
-    tag_generation_prompt_configs, sample_tag_types
-):
+from langchain_core.messages import SystemMessage
+from states.tag_generation_state import initialize_tag_generation_state
+
+
+def test_initialize_tag_generation_state(mock_tag_config, sample_tag_types):
+    """Test tag generation state initialization from config."""
+    # Create a config structure that matches what the function expects
+    config = {
+        "agents": {
+            "llm_tags_generator": {
+                "prompt_config": mock_tag_config["llm_tags_generator"]
+            },
+            "tag_type_assigner": {
+                "prompt_config": mock_tag_config["tag_type_assigner"]
+            },
+            "tags_selector": {"prompt_config": mock_tag_config["tags_selector"]},
+        },
+        "tag_types": sample_tag_types,
+        "max_tags": 7,
+    }
+
     state = initialize_tag_generation_state(
-        llm_tags_generator_prompt_cfg=tag_generation_prompt_configs[
-            "llm_tags_generator"
-        ],
-        tag_type_assigner_prompt_cfg=tag_generation_prompt_configs["tag_type_assigner"],
-        tags_selector_prompt_cfg=tag_generation_prompt_configs["tags_selector"],
-        tag_types=sample_tag_types,
-        max_tags=7,
+        config=config,
         input_text="Example input text",
     )
 
@@ -53,4 +62,60 @@ def test_initialize_tag_generation_state(
 
     # Other config fields
     assert state["max_tags"] == 7
+    assert state["tag_types"] == sample_tag_types
+
+
+def test_initialize_tag_generation_state_without_input_text(
+    mock_tag_config, sample_tag_types
+):
+    """Test tag generation state template creation (no input text)."""
+    config = {
+        "agents": {
+            "llm_tags_generator": {
+                "prompt_config": mock_tag_config["llm_tags_generator"]
+            },
+            "tag_type_assigner": {
+                "prompt_config": mock_tag_config["tag_type_assigner"]
+            },
+            "tags_selector": {"prompt_config": mock_tag_config["tags_selector"]},
+        },
+        "tag_types": sample_tag_types,
+        "max_tags": 5,
+    }
+
+    state = initialize_tag_generation_state(config)
+
+    # Should handle None input text gracefully
+    assert state["input_text"] is None
+    assert state["max_tags"] == 5
+    assert len(state["llm_tags_gen_messages"]) == 2
+    assert len(state["tag_type_assigner_messages"]) == 2
+    assert len(state["tags_selector_messages"]) == 2
+
+
+def test_initialize_tag_generation_state_extracts_config_correctly(
+    mock_tag_config, sample_tag_types
+):
+    """Test that function correctly extracts values from config structure."""
+    config = {
+        "agents": {
+            "llm_tags_generator": {
+                "prompt_config": mock_tag_config["llm_tags_generator"]
+            },
+            "tag_type_assigner": {
+                "prompt_config": mock_tag_config["tag_type_assigner"]
+            },
+            "tags_selector": {"prompt_config": mock_tag_config["tags_selector"]},
+        },
+        "tag_types": sample_tag_types,
+        "max_tags": 10,
+    }
+
+    state = initialize_tag_generation_state(config, input_text="test")
+
+    # Verify that max_tags from config is used
+    assert state["max_tags"] == 10
+    assert "select at most 10 tags" in state["tags_selector_messages"][1].content
+
+    # Verify that tag_types from config is used
     assert state["tag_types"] == sample_tag_types
