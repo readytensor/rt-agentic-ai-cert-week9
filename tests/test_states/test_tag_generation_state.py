@@ -4,14 +4,19 @@ from states.tag_generation_state import initialize_tag_generation_state
 from states.tag_generation_state import initialize_tag_generation_state
 from langchain_core.messages import SystemMessage
 
-def test_initialize_tag_generation_state(tag_generation_prompt_configs, sample_tag_types):
+
+def test_initialize_tag_generation_state(
+    tag_generation_prompt_configs, sample_tag_types
+):
     state = initialize_tag_generation_state(
-        llm_tags_generator_prompt_cfg=tag_generation_prompt_configs["llm_tags_generator"],
+        llm_tags_generator_prompt_cfg=tag_generation_prompt_configs[
+            "llm_tags_generator"
+        ],
         tag_type_assigner_prompt_cfg=tag_generation_prompt_configs["tag_type_assigner"],
         tags_selector_prompt_cfg=tag_generation_prompt_configs["tags_selector"],
         tag_types=sample_tag_types,
         max_tags=7,
-        input_text="Example input text"
+        input_text="Example input text",
     )
 
     # Basic keys exist and are populated properly
@@ -24,14 +29,17 @@ def test_initialize_tag_generation_state(tag_generation_prompt_configs, sample_t
     for messages in [
         state["llm_tags_gen_messages"],
         state["tag_type_assigner_messages"],
-        state["tags_selector_messages"]
+        state["tags_selector_messages"],
     ]:
         assert len(messages) == 2
         assert all(isinstance(m, SystemMessage) for m in messages)
 
     # Validate presence of tag types prompt
     assert "tag types you can assign" in state["llm_tags_gen_messages"][1].content
-    assert "**task**: ML objective like classification" in state["llm_tags_gen_messages"][1].content
+    assert (
+        "**task**: ML objective like classification"
+        in state["llm_tags_gen_messages"][1].content
+    )
 
     # Selector message should mention max tags
     assert "select at most 7 tags" in state["tags_selector_messages"][1].content
