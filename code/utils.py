@@ -1,6 +1,7 @@
 import yaml
 import os
 
+
 from paths import CONFIG_FILE_PATH, DATA_DIR
 
 
