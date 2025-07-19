@@ -139,7 +139,9 @@ def test_tldr_generator_node_constructs_correct_message_sequence(
     monkeypatch.setattr(
         "nodes.a3_nodes._get_input_text_message", lambda state: mock_input_msg
     )
-    monkeypatch.setattr("nodes.a3_nodes._get_begin_task_message", lambda: mock_begin_msg)
+    monkeypatch.setattr(
+        "nodes.a3_nodes._get_begin_task_message", lambda: mock_begin_msg
+    )
 
     node = make_tldr_generator_node(llm_model="mock-model")
     result = node(tldr_generator_state)
