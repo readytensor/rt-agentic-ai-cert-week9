@@ -5,6 +5,7 @@ from typing_extensions import Annotated
 
 from states.tag_generation_state import TagGenerationState
 
+
 class A3SystemState(TypedDict, TagGenerationState):
     """State class for the A3 system."""
 
