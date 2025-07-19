@@ -19,3 +19,4 @@ pytest~=8.4.1
 spacy~=3.8.7
 https://github.com/explosion/spacy-models/releases/download/en_core_web_trf-3.8.0/en_core_web_trf-3.8.0-py3-none-any.whl 
 guardrails-ai~=0.6.6
+rich~=14.0.0
