@@ -32,15 +32,9 @@ from consts import (
     TITLE_FEEDBACK,
     TLDR_FEEDBACK,
     REFERENCES_FEEDBACK,
-    MANAGER,
     TITLE_GENERATOR,
     TLDR_GENERATOR,
-    LLM_TAGS_GENERATOR,
-    TAG_TYPE_ASSIGNER,
-    TAGS_SELECTOR,
     REFERENCES_GENERATOR,
-    REFERENCES_SELECTOR,
-    REVIEWER,
 )
 from .output_types import SearchQueries, References, ReviewOutput
 from .node_utils import (
@@ -73,9 +67,11 @@ def make_manager_node(llm_model: str) -> Callable[[Dict[str, Any]], Dict[str, An
         ]
 
         ai_response = llm.invoke(input_messages)
-        return {
-            MANAGER_BRIEF: ai_response.content.strip(),
-        }
+        if ai_response.content is None:
+            print("⚠️ Manager: LLM returned None content, using empty string")
+            return {MANAGER_BRIEF: ""}
+
+        return {MANAGER_BRIEF: ai_response.content.strip()}
 
     return manager_node
 
@@ -107,10 +103,11 @@ def make_title_generator_node(
             _get_begin_task_message(),
         ]
         ai_response = llm.invoke(input_messages)
-        content = ai_response.content.strip()
-
+        
+        content = ai_response.content or ""
+    
         return {
-            TITLE: content,
+            TITLE: content.strip(),
             TITLE_FEEDBACK: "",
         }
 
