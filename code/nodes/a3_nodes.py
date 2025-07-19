@@ -4,6 +4,7 @@ from langchain_tavily import TavilySearch
 
 from states.a3_state import A3SystemState
 from llm import get_llm
+from .node_utils import execute_search_queries
 
 from consts import (
     INPUT_TEXT,
@@ -103,9 +104,9 @@ def make_title_generator_node(
             _get_begin_task_message(),
         ]
         ai_response = llm.invoke(input_messages)
-        
+
         content = ai_response.content or ""
-    
+
         return {
             TITLE: content.strip(),
             TITLE_FEEDBACK: "",
@@ -139,10 +140,10 @@ def make_tldr_generator_node(
             _get_begin_task_message(),
         ]
         ai_response = llm.invoke(input_messages)
-        content = ai_response.content.strip()
+        content = ai_response.content or ""
 
         return {
-            TLDR: content,
+            TLDR: content.strip(),
             TLDR_FEEDBACK: "",
         }
 
@@ -180,29 +181,11 @@ def make_references_generator_node(
             )
             print(f"✅ Queries to be executed: {queries}")
 
-            search_results = []
-            for query in queries:
-                print(f"🔍 Executing query: {query}")
-                try:
-                    result = TavilySearch(max_results=3).invoke(query)["results"]
-                except Exception as e:
-                    print(f"❌ Error executing query: {e}")
-                    continue
-                search_results.extend(result)
-                print(f"✅ Successfully executed query: {query}")
-
-            candidate_references = [
-                {
-                    "url": search_result["url"],
-                    "title": search_result["title"],
-                    "page_content": search_result["content"],
-                }
-                for search_result in search_results
-                if search_result["content"]  # Ensure content is not empty
-            ]
+            search_results = execute_search_queries(queries)
+            print(f"✅ # Search results obtained: {len(search_results)}")
             return {
                 REFERENCE_SEARCH_QUERIES: queries,
-                CANDIDATE_REFERENCES: candidate_references,
+                CANDIDATE_REFERENCES: search_results,
             }
         except Exception as e:
             print(f"❌ References extraction failed: {e}")

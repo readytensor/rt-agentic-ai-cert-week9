@@ -1,5 +1,5 @@
 from langgraph.graph import StateGraph, START, END
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 from consts import (
     LLM_TAGS_GENERATOR,
@@ -19,6 +19,7 @@ from nodes.tag_generation_nodes import (
 )
 from states.tag_generation_state import (
     TagGenerationState,
+    initialize_tag_generation_state,
 )
 
 
@@ -52,9 +53,13 @@ def add_tag_generation_flow(
     Returns:
         str: The name of the final node in this subgraph (typically TAGS_SELECTOR).
     """
+
+    agents = tag_generation_config["agents"]
+    max_tags = tag_generation_config["max_tags"]
+
     # Create nodes
     llm_tags_generator_node = make_llm_tag_generator_node(
-        llm_model=tag_generation_config["agents"][LLM_TAGS_GENERATOR]["llm"]
+        llm_model=agents[LLM_TAGS_GENERATOR]["llm"]
     )
     graph.add_node(LLM_TAGS_GENERATOR, llm_tags_generator_node)
 
@@ -62,7 +67,7 @@ def add_tag_generation_flow(
     graph.add_node(SPACY_TAGS_GENERATOR, spacy_tag_generator_node)
 
     tag_type_assigner_node = make_tag_type_assigner_node(
-        llm_model=tag_generation_config["agents"][TAG_TYPE_ASSIGNER]["llm"]
+        llm_model=agents[TAG_TYPE_ASSIGNER]["llm"]
     )
     graph.add_node(TAG_TYPE_ASSIGNER, tag_type_assigner_node)
 
@@ -72,8 +77,8 @@ def add_tag_generation_flow(
     graph.add_node(TAGS_AGGREGATOR, aggregate_tags_node)
 
     tags_selector_node = make_tag_selector_node(
-        llm_model=tag_generation_config["agents"][TAGS_SELECTOR]["llm"],
-        max_tags=tag_generation_config["max_tags"],
+        llm_model=agents[TAGS_SELECTOR]["llm"],
+        max_tags=max_tags,
     )
     graph.add_node(TAGS_SELECTOR, tags_selector_node)
 
@@ -91,3 +96,18 @@ def add_tag_generation_flow(
     graph.add_edge(TAGS_AGGREGATOR, TAGS_SELECTOR)
 
     return TAGS_SELECTOR
+
+
+class TagGenerationSystem:
+    def __init__(self, config):
+        self.config = config
+        self.state_template = initialize_tag_generation_state(
+            config=self.config,
+            input_text=None,  # Will be overridden later
+        )
+        self.graph = build_tag_generation_graph(self.config)
+
+    def extract_tags(self, text: str):
+        # Merge template with new input
+        runtime_state = {**self.state_template, "input_text": text}
+        return self.graph.invoke(runtime_state)

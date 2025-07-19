@@ -21,6 +21,11 @@ from consts import (
 from paths import GAZETTEER_ENTITIES_FILE_PATH
 from utils import load_config
 from .output_types import Entities
+from .node_utils import (
+    _get_input_text_message,
+    _get_manager_brief_message,
+    _get_begin_task_message,
+)
 
 EXCLUDED_SPACY_ENTITY_TYPES = {"DATE", "CARDINAL"}
 
@@ -37,9 +42,19 @@ def make_llm_tag_generator_node(
         """
         Extracts tags from the input text using the LLM.
         """
+        # Prepare the input for the LLM
+        input_text = state[INPUT_TEXT]
+        if input_text is None or input_text.strip() == "":
+            raise ValueError("Input text cannot be empty or None.")
+        input_messages = [
+            *state[LLM_TAGS_GEN_MESSAGES],
+            _get_manager_brief_message(state),
+            _get_input_text_message(state),
+            _get_begin_task_message(),
+        ]
         tags = (
             llm.with_structured_output(Entities)
-            .invoke(state[LLM_TAGS_GEN_MESSAGES])
+            .invoke(input_messages)
             .model_dump()["entities"]
         )
 
