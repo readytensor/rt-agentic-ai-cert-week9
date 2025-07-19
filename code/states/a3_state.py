@@ -7,6 +7,17 @@ from typing_extensions import Annotated
 from prompt_builder import build_system_prompt_message
 from states.tag_generation_state import TagGenerationState, generate_tag_types_prompt
 
+from consts import (
+    MANAGER,
+    LLM_TAGS_GENERATOR,
+    TAG_TYPE_ASSIGNER,
+    TAGS_SELECTOR,
+    TLDR_GENERATOR,
+    TITLE_GENERATOR,
+    REFERENCES_GENERATOR,
+    REFERENCES_SELECTOR,
+    REVIEWER,
+)
 
 class A3SystemState(TypedDict, TagGenerationState):
     """State class for the A3 system."""
@@ -43,100 +54,79 @@ class A3SystemState(TypedDict, TagGenerationState):
     max_references: Optional[int]
 
 
-def initialize_a3_state(
-    input_text: str,
-    manager_prompt_cfg: dict,
-    llm_tags_generator_prompt_cfg: dict,
-    tag_type_assigner_prompt_cfg: dict,
-    tags_selector_prompt_cfg: dict,
-    max_tags: int,
-    tag_types: List[Dict[str, str]],
-    title_gen_prompt_cfg: dict,
-    tldr_gen_prompt_cfg: dict,
-    references_gen_prompt_cfg: dict,
-    max_search_queries: int,
-    references_selector_prompt_cfg: dict,
-    max_references: int,
-    reviewer_prompt_cfg: dict,
-    max_revisions: int,
-) -> A3SystemState:
-    """Initialize the A3 system state with default values."""
-    # manager system prompt
-    manager_messages = [
-        SystemMessage(build_system_prompt_message(manager_prompt_cfg)),
-    ]
+# def initialize_a3_state(a3_config: dict, input_text: str = None) -> A3SystemState:
+#     """Initialize the A3 system state from config."""
+#     # Extract agent configs
+#     agents = a3_config["agents"]
+#     # Build system messages
+#     manager_messages = [
+#         SystemMessage(build_system_prompt_message(agents[MANAGER]["prompt_config"])),
+#     ]
+#     title_gen_messages = [
+#         SystemMessage(build_system_prompt_message(agents[TITLE_GENERATOR]["prompt_config"])),
+#     ]
+#     tldr_gen_messages = [
+#         SystemMessage(build_system_prompt_message(agents[TLDR_GENERATOR]["prompt_config"])),
+#     ]
+#     # Tag-related messages
+#     tag_types_prompt = generate_tag_types_prompt(a3_config["tag_types"])
 
-    title_gen_messages = [
-        SystemMessage(build_system_prompt_message(title_gen_prompt_cfg)),
-    ]
-    tldr_gen_messages = [
-        SystemMessage(build_system_prompt_message(tldr_gen_prompt_cfg)),
-    ]
-    # worker nodes system prompts. we dont add the publication text yet
-    tag_types_prompt = generate_tag_types_prompt(tag_types)
-    llm_tags_gen_messages = [
-        SystemMessage(build_system_prompt_message(llm_tags_generator_prompt_cfg)),
-        SystemMessage(f"Here are the tag types you can assign:\n\n{tag_types_prompt}"),
-    ]
-    tag_type_assigner_messages = [
-        SystemMessage(build_system_prompt_message(tag_type_assigner_prompt_cfg)),
-        SystemMessage(f"Here are the tag types you can assign:\n\n{tag_types_prompt}"),
-    ]
-    tags_selector_messages = [
-        SystemMessage(build_system_prompt_message(tags_selector_prompt_cfg)),
-        SystemMessage(
-            f"Please select at most {max_tags} tags from the generated list.\n"
-        ),
-    ]
-    references_gen_messages = [
-        SystemMessage(build_system_prompt_message(references_gen_prompt_cfg)),
-        SystemMessage(
-            f"Please generate at most {max_search_queries} search queries from the generated list.\n"
-        ),
-    ]
-    references_selector_messages = [
-        SystemMessage(build_system_prompt_message(references_selector_prompt_cfg)),
-        SystemMessage(
-            f"Please select at most {max_references} references from the given list of references.\n"
-        ),
-    ]
-    reviewer_messages = [
-        SystemMessage(build_system_prompt_message(reviewer_prompt_cfg)),
-    ]
-
-    return A3SystemState(
-        input_text=input_text,
-        manager_brief=None,
-        manager_messages=manager_messages,
-        title_gen_messages=title_gen_messages,
-        llm_tags_gen_messages=llm_tags_gen_messages,
-        tag_type_assigner_messages=tag_type_assigner_messages,
-        tags_selector_messages=tags_selector_messages,
-        tldr_gen_messages=tldr_gen_messages,
-        references_gen_messages=references_gen_messages,
-        references_selector_messages=references_selector_messages,
-        reviewer_messages=reviewer_messages,
-        tldr=None,
-        title=None,
-        llm_tags=[],
-        spacy_tags=[],
-        gazetteer_tags=[],
-        candidate_tags=[],
-        selected_tags=[],
-        reference_search_queries=None,
-        candidate_references=[],
-        selected_references=[],
-        revision_round=0,
-        needs_revision=False,
-        tldr_feedback=None,
-        title_feedback=None,
-        references_feedback=None,
-        tldr_approved=False,
-        title_approved=False,
-        references_approved=False,
-        max_revisions=max_revisions,
-        max_tags=max_tags,
-        tag_types=tag_types,
-        max_search_queries=max_search_queries,
-        max_references=max_references,
-    )
+#     llm_tags_gen_messages = [
+#         SystemMessage(build_system_prompt_message(agents[LLM_TAGS_GENERATOR]["prompt_config"])),
+#         SystemMessage(f"Here are the tag types you can assign:\n\n{tag_types_prompt}"),
+#     ]
+#     tag_type_assigner_messages = [
+#         SystemMessage(build_system_prompt_message(agents[TAG_TYPE_ASSIGNER]["prompt_config"])),
+#         SystemMessage(f"Here are the tag types you can assign:\n\n{tag_types_prompt}"),
+#     ]
+#     tags_selector_messages = [
+#         SystemMessage(build_system_prompt_message(agents[TAGS_SELECTOR]["prompt_config"])),
+#         SystemMessage(f"Please select at most {a3_config['max_tags']} tags from the generated list.\n"),
+#     ]
+#     references_gen_messages = [
+#         SystemMessage(build_system_prompt_message(agents[REFERENCES_GENERATOR]["prompt_config"])),
+#         SystemMessage(f"Please generate at most {a3_config['max_search_queries']} search queries from the generated list.\n"),
+#     ]
+#     references_selector_messages = [
+#         SystemMessage(build_system_prompt_message(agents[REFERENCES_SELECTOR]["prompt_config"])),
+#         SystemMessage(f"Please select at most {a3_config['max_references']} references from the given list of references.\n"),
+#     ]
+#     reviewer_messages = [
+#         SystemMessage(build_system_prompt_message(agents[REVIEWER]["prompt_config"])),
+#     ]
+#     return A3SystemState(
+#         input_text=input_text,
+#         manager_brief=None,
+#         manager_messages=manager_messages,
+#         title_gen_messages=title_gen_messages,
+#         llm_tags_gen_messages=llm_tags_gen_messages,
+#         tag_type_assigner_messages=tag_type_assigner_messages,
+#         tags_selector_messages=tags_selector_messages,
+#         tldr_gen_messages=tldr_gen_messages,
+#         references_gen_messages=references_gen_messages,
+#         references_selector_messages=references_selector_messages,
+#         reviewer_messages=reviewer_messages,
+#         tldr=None,
+#         title=None,
+#         llm_tags=[],
+#         spacy_tags=[],
+#         gazetteer_tags=[],
+#         candidate_tags=[],
+#         selected_tags=[],
+#         reference_search_queries=None,
+#         candidate_references=[],
+#         selected_references=[],
+#         revision_round=0,
+#         needs_revision=False,
+#         tldr_feedback=None,
+#         title_feedback=None,
+#         references_feedback=None,
+#         tldr_approved=False,
+#         title_approved=False,
+#         references_approved=False,
+#         max_revisions=a3_config["max_revisions"],
+#         max_tags=a3_config["max_tags"],
+#         tag_types=a3_config["tag_types"],
+#         max_search_queries=a3_config["max_search_queries"],
+#         max_references=a3_config["max_references"],
+#     )

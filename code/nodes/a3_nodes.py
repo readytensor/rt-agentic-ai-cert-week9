@@ -50,42 +50,6 @@ from .node_utils import (
     _get_begin_task_message,
     format_references_for_prompt,
 )
-from states.a3_state import initialize_a3_state
-
-
-def make_state_initializer_node(a3_config):
-    def initializer_node(state: Dict[str, Any]) -> Dict[str, Any]:
-        input_text = state["input_text"]
-
-        return initialize_a3_state(
-            input_text=input_text,
-            manager_prompt_cfg=a3_config["agents"][MANAGER]["prompt_config"],
-            llm_tags_generator_prompt_cfg=a3_config["agents"][LLM_TAGS_GENERATOR][
-                "prompt_config"
-            ],
-            tag_type_assigner_prompt_cfg=a3_config["agents"][TAG_TYPE_ASSIGNER][
-                "prompt_config"
-            ],
-            tags_selector_prompt_cfg=a3_config["agents"][TAGS_SELECTOR][
-                "prompt_config"
-            ],
-            tag_types=a3_config["tag_types"],
-            max_tags=a3_config["max_tags"],
-            title_gen_prompt_cfg=a3_config["agents"][TITLE_GENERATOR]["prompt_config"],
-            tldr_gen_prompt_cfg=a3_config["agents"][TLDR_GENERATOR]["prompt_config"],
-            references_gen_prompt_cfg=a3_config["agents"][REFERENCES_GENERATOR][
-                "prompt_config"
-            ],
-            max_search_queries=a3_config["max_search_queries"],
-            references_selector_prompt_cfg=a3_config["agents"][REFERENCES_SELECTOR][
-                "prompt_config"
-            ],
-            max_references=a3_config["max_references"],
-            reviewer_prompt_cfg=a3_config["agents"][REVIEWER]["prompt_config"],
-            max_revisions=a3_config["max_revisions"],
-        )
-
-    return initializer_node
 
 
 def make_manager_node(llm_model: str) -> Callable[[Dict[str, Any]], Dict[str, Any]]:
