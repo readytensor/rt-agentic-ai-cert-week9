@@ -260,8 +260,14 @@ def make_tag_selector_node(
         """
         Uses the LLM to select the most important tags from the candidate list.
         """
+        input_text = state[INPUT_TEXT]
+        if input_text is None or input_text.strip() == "":
+            raise ValueError("Input text cannot be empty or None.")
+
         candidate_tags = state.get(CANDIDATE_TAGS, [])
-        base_messages = state.get(TAGS_SELECTOR_MESSAGES, [])
+        if not candidate_tags:
+            print("No candidate tags available for selection.")
+            return {SELECTED_TAGS: []}
 
         selection_instruction = HumanMessage(
             content=(
@@ -269,9 +275,18 @@ def make_tag_selector_node(
                 f"Please return a refined list of the most important tags (maximum {max_tags})."
             )
         )
-        full_prompt = base_messages + [selection_instruction]
 
-        response = llm.with_structured_output(Entities).invoke(full_prompt).model_dump()
+        input_messages = [
+            *state[TAGS_SELECTOR_MESSAGES],
+            _get_manager_brief_message(state),
+            _get_input_text_message(state),
+            selection_instruction,
+            _get_begin_task_message(),
+        ]
+
+        response = (
+            llm.with_structured_output(Entities).invoke(input_messages).model_dump()
+        )
 
         tags = response.get("entities", [])
         cleaned_tags = []
