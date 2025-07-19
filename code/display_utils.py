@@ -24,7 +24,6 @@ def print_a3_response(
     Returns:
         The same response dictionary (for chaining)
     """
-
     if use_rich and RICH_AVAILABLE:
         return _print_a3_response_rich(response, title)
     else:
@@ -53,7 +52,7 @@ def _print_a3_response_rich(response: Dict[str, Any], title: str) -> Dict[str, A
     console.print(
         Panel(
             title_content,
-            title="[bold yellow]📝 Title[/bold yellow]",
+            title="[bold yellow]📣 Title[/bold yellow]",
             border_style="yellow",
         )
     )
@@ -202,14 +201,13 @@ def print_a3_response_compact(
     Returns:
         The same response dictionary (for chaining)
     """
-
     if use_rich and RICH_AVAILABLE:
         console = Console()
         console.print("\n[bold blue]🎯 A3 System Results:[/bold blue]")
         console.print("─" * 50)
 
         if response.get("title"):
-            console.print(f"[green]📝 Title:[/green] {response['title']}")
+            console.print(f"[green]📣 Title:[/green] {response['title']}")
 
         if response.get("tldr"):
             console.print(f"[cyan]📄 TL;DR:[/cyan] {response['tldr']}")
@@ -219,7 +217,7 @@ def print_a3_response_compact(
             tag_names = [
                 tag.get("name", "") for tag in selected_tags if tag.get("name")
             ]
-            console.print(f"[magenta]🏷️  Tags:[/magenta] {', '.join(tag_names)}")
+            console.print(f"[magenta]🔖 Tags:[/magenta] {', '.join(tag_names)}")
 
         selected_references = response.get("selected_references", [])
         if selected_references:
@@ -234,7 +232,7 @@ def print_a3_response_compact(
 
         # Essential outputs only
         if response.get("title"):
-            print(f"📝 Title: {response['title']}")
+            print(f"📣 Title: {response['title']}")
 
         if response.get("tldr"):
             print(f"📄 TL;DR: {response['tldr']}")
@@ -244,7 +242,7 @@ def print_a3_response_compact(
             tag_names = [
                 tag.get("name", "") for tag in selected_tags if tag.get("name")
             ]
-            print(f"🏷️  Tags: {', '.join(tag_names)}")
+            print(f"🔖 Tags: {', '.join(tag_names)}")
 
         selected_references = response.get("selected_references", [])
         if selected_references:
@@ -265,7 +263,6 @@ def print_a3_response_detailed(response: Dict[str, Any]) -> Dict[str, Any]:
     Returns:
         The same response dictionary (for chaining)
     """
-
     # Standard output first
     print_a3_response(response, "A3-SYSTEM DETAILED RESULTS")
 
@@ -307,6 +304,223 @@ def print_a3_response_detailed(response: Dict[str, Any]) -> Dict[str, Any]:
     print(f"  Candidate tags: {len(response.get('candidate_tags', []))}")
     print(f"  Selected tags: {len(response.get('selected_tags', []))}")
 
+    print("=" * 80)
+
+    return response
+
+
+def print_tag_generation_response(
+    response: dict, title: str = "TAG GENERATION DEMO", use_rich: bool = True
+) -> dict:
+    """
+    Pretty print tag generation response in a formatted manner.
+
+    Args:
+        response: The response dictionary from tag generation system
+        title: Optional title for the output
+        use_rich: Whether to use Rich formatting if available
+
+    Returns:
+        The same response dictionary (for chaining)
+    """
+    if use_rich and RICH_AVAILABLE:
+        return _print_tag_generation_response_rich(response, title)
+    else:
+        return _print_tag_generation_response_plain(response, title)
+
+
+def _print_tag_generation_response_rich(response: dict, title: str) -> dict:
+    """Rich-formatted version of tag generation response printer."""
+    console = Console()
+
+    # Main title panel
+    console.print(Panel.fit(f"🔖 {title}", style="bold blue"))
+
+    # Input text preview
+    input_text = response.get("input_text", "")
+    if input_text:
+        preview = input_text[:200] + "..." if len(input_text) > 200 else input_text
+        console.print(
+            Panel(
+                preview,
+                title="[bold green]📄 Input Text (Preview)[/bold green]",
+                border_style="green",
+            )
+        )
+
+    # LLM Tags
+    llm_tags = response.get("llm_tags", [])
+    if llm_tags:
+        llm_tags_text = "\n".join(
+            f"• [bold]{tag.get('name', 'N/A')}[/bold] ([italic]{tag.get('type', 'N/A')}[/italic])"
+            for tag in llm_tags
+        )
+        console.print(
+            Panel(
+                llm_tags_text,
+                title="[bold cyan]🤖 LLM Generated Tags[/bold cyan]",
+                border_style="cyan",
+            )
+        )
+
+    # SpaCy Tags
+    spacy_tags = response.get("spacy_tags", [])
+    if spacy_tags:
+        spacy_tags_text = "\n".join(
+            f"• [bold]{tag.get('name', 'N/A')}[/bold] ([italic]{tag.get('type', 'N/A')}[/italic])"
+            for tag in spacy_tags
+        )
+        console.print(
+            Panel(
+                spacy_tags_text,
+                title="[bold yellow]🔍 SpaCy Extracted Tags[/bold yellow]",
+                border_style="yellow",
+            )
+        )
+
+    # Gazetteer Tags
+    gazetteer_tags = response.get("gazetteer_tags", [])
+    if gazetteer_tags:
+        gazetteer_tags_text = "\n".join(
+            f"• [bold]{tag.get('name', 'N/A')}[/bold] ([italic]{tag.get('type', 'N/A')}[/italic])"
+            for tag in gazetteer_tags
+        )
+        console.print(
+            Panel(
+                gazetteer_tags_text,
+                title="[bold green]📚 Gazetteer Found Tags[/bold green]",
+                border_style="green",
+            )
+        )
+
+    # Candidate Tags (after aggregation)
+    candidate_tags = response.get("candidate_tags", [])
+    if candidate_tags:
+        candidate_tags_text = "\n".join(
+            f"• [bold]{tag.get('name', 'N/A')}[/bold] ([italic]{tag.get('type', 'N/A')}[/italic])"
+            for tag in candidate_tags
+        )
+        console.print(
+            Panel(
+                candidate_tags_text,
+                title="[bold orange3]🔄 All Candidate Tags[/bold orange3]",
+                border_style="orange3",
+            )
+        )
+
+    # Final Selected Tags
+    selected_tags = response.get("selected_tags", [])
+    if selected_tags:
+        selected_tags_text = "\n".join(
+            f"• [bold]{tag.get('name', 'N/A')}[/bold] ([italic]{tag.get('type', 'N/A')}[/italic])"
+            for tag in selected_tags
+        )
+        console.print(
+            Panel(
+                selected_tags_text,
+                title="[bold magenta]⭐ Final Selected Tags[/bold magenta]",
+                border_style="magenta",
+            )
+        )
+    else:
+        console.print(
+            Panel(
+                "(No tags selected)",
+                title="[bold magenta]⭐ Final Selected Tags[/bold magenta]",
+                border_style="magenta",
+            )
+        )
+
+    # Summary statistics
+    summary_text = f"""[bold]Tag Generation Summary:[/bold]
+• LLM Generated: {len(llm_tags)} tags
+• SpaCy Extracted: {len(spacy_tags)} tags  
+• Gazetteer Found: {len(gazetteer_tags)} tags
+• Total Candidates: {len(candidate_tags)} tags
+• Final Selected: {len(selected_tags)} tags"""
+
+    console.print(
+        Panel(
+            summary_text,
+            title="[bold red]📊 Summary Statistics[/bold red]",
+            border_style="red",
+        )
+    )
+
+    return response
+
+
+def _print_tag_generation_response_plain(response: dict, title: str) -> dict:
+    """Plain text fallback version."""
+    print("=" * 80)
+    print(f"🔖 {title}")
+    print("=" * 80)
+
+    # Input text preview
+    input_text = response.get("input_text", "")
+    if input_text:
+        preview = input_text[:200] + "..." if len(input_text) > 200 else input_text
+        print("Input Text (Preview):")
+        print(preview)
+        print("=" * 80)
+
+    # LLM Tags
+    llm_tags = response.get("llm_tags", [])
+    print("LLM Generated Tags:")
+    if llm_tags:
+        for tag in llm_tags:
+            print(f"  • {tag.get('name', 'N/A')} ({tag.get('type', 'N/A')})")
+    else:
+        print("  (No LLM tags generated)")
+    print("=" * 80)
+
+    # SpaCy Tags
+    spacy_tags = response.get("spacy_tags", [])
+    print("SpaCy Extracted Tags:")
+    if spacy_tags:
+        for tag in spacy_tags:
+            print(f"  • {tag.get('name', 'N/A')} ({tag.get('type', 'N/A')})")
+    else:
+        print("  (No SpaCy tags found)")
+    print("=" * 80)
+
+    # Gazetteer Tags
+    gazetteer_tags = response.get("gazetteer_tags", [])
+    print("Gazetteer Found Tags:")
+    if gazetteer_tags:
+        for tag in gazetteer_tags:
+            print(f"  • {tag.get('name', 'N/A')} ({tag.get('type', 'N/A')})")
+    else:
+        print("  (No gazetteer tags found)")
+    print("=" * 80)
+
+    # Candidate Tags
+    candidate_tags = response.get("candidate_tags", [])
+    print("All Candidate Tags:")
+    if candidate_tags:
+        for tag in candidate_tags:
+            print(f"  • {tag.get('name', 'N/A')} ({tag.get('type', 'N/A')})")
+    else:
+        print("  (No candidate tags)")
+    print("=" * 80)
+
+    # Final Selected Tags
+    selected_tags = response.get("selected_tags", [])
+    print("Final Selected Tags:")
+    if selected_tags:
+        for tag in selected_tags:
+            print(f"  • {tag.get('name', 'N/A')} ({tag.get('type', 'N/A')})")
+    else:
+        print("  (No tags selected)")
+    print("=" * 80)
+
+    # Summary
+    print("Summary Statistics:")
+    print(f"  LLM Generated: {len(llm_tags)} tags")
+    print(f"  SpaCy Extracted: {len(spacy_tags)} tags")
+    print(f"  Gazetteer Found: {len(gazetteer_tags)} tags")
+    print(f"  Total Candidates: {len(candidate_tags)} tags")
+    print(f"  Final Selected: {len(selected_tags)} tags")
     print("=" * 80)
 
     return response
