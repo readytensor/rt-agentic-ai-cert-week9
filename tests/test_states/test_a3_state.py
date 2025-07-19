@@ -1,27 +1,44 @@
 from states.a3_state import initialize_a3_state
 from langchain_core.messages import SystemMessage
 
-def test_initialize_a3_state(minimal_prompt_configs, sample_tag_types):
-    state = initialize_a3_state(
-        input_text="Example article",
-        manager_prompt_cfg=minimal_prompt_configs["manager"],
-        llm_tags_generator_prompt_cfg=minimal_prompt_configs["llm_tags_generator"],
-        tag_type_assigner_prompt_cfg=minimal_prompt_configs["tag_type_assigner"],
-        tags_selector_prompt_cfg=minimal_prompt_configs["tags_selector"],
-        title_gen_prompt_cfg=minimal_prompt_configs["title_generator"],
-        tldr_gen_prompt_cfg=minimal_prompt_configs["tldr_generator"],
-        references_gen_prompt_cfg=minimal_prompt_configs["references_generator"],
-        references_selector_prompt_cfg=minimal_prompt_configs["references_selector"],
-        reviewer_prompt_cfg=minimal_prompt_configs["reviewer"],
-        max_tags=8,
-        tag_types=sample_tag_types,
-        max_search_queries=4,
-        max_references=5,
-        max_revisions=2,
-    )
 
-    # General fields
-    assert state["input_text"] == "Example article"
+def test_initialize_a3_state(minimal_prompt_configs, sample_tag_types):
+    # Create config structure
+    config = {
+        "agents": {
+            "manager": {"prompt_config": minimal_prompt_configs["manager"]},
+            "title_generator": {
+                "prompt_config": minimal_prompt_configs["title_generator"]
+            },
+            "tldr_generator": {
+                "prompt_config": minimal_prompt_configs["tldr_generator"]
+            },
+            "llm_tags_generator": {
+                "prompt_config": minimal_prompt_configs["llm_tags_generator"]
+            },
+            "tag_type_assigner": {
+                "prompt_config": minimal_prompt_configs["tag_type_assigner"]
+            },
+            "tags_selector": {"prompt_config": minimal_prompt_configs["tags_selector"]},
+            "references_generator": {
+                "prompt_config": minimal_prompt_configs["references_generator"]
+            },
+            "references_selector": {
+                "prompt_config": minimal_prompt_configs["references_selector"]
+            },
+            "reviewer": {"prompt_config": minimal_prompt_configs["reviewer"]},
+        },
+        "tag_types": sample_tag_types,
+        "max_tags": 8,
+        "max_search_queries": 4,
+        "max_references": 5,
+        "max_revisions": 2,
+    }
+
+    state = initialize_a3_state(config=config, input_text="test input")
+
+    # Test assertions...
+    assert state["input_text"] == "test input"
     assert state["manager_brief"] is None
     assert state["revision_round"] == 0
     assert state["needs_revision"] is False
@@ -70,13 +87,22 @@ def test_initialize_a3_state(minimal_prompt_configs, sample_tag_types):
     # Check presence of tag type instructions in LLM tag generator messages
     llm_tag_msg = state["llm_tags_gen_messages"][1].content
     assert "tag types you can assign" in llm_tag_msg
-    assert "**task**: ML objective like classification" in state["llm_tags_gen_messages"][1].content
+    assert (
+        "**task**: ML objective like classification"
+        in state["llm_tags_gen_messages"][1].content
+    )
 
     # Check selector constraint
     assert "select at most 8 tags" in state["tags_selector_messages"][1].content
 
     # Check query constraint
-    assert "generate at most 4 search queries" in state["references_gen_messages"][1].content
+    assert (
+        "generate at most 4 search queries"
+        in state["references_gen_messages"][1].content
+    )
 
     # Check reference selector constraint
-    assert "select at most 5 references" in state["references_selector_messages"][1].content
+    assert (
+        "select at most 5 references"
+        in state["references_selector_messages"][1].content
+    )
