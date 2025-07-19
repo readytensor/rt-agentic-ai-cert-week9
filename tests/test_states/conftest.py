@@ -47,7 +47,7 @@ def sample_prompt_config():
 
 
 @pytest.fixture
-def tag_generation_prompt_configs():
+def mock_tag_config():
     return {
         "llm_tags_generator": {
             "role": "an analyst",
