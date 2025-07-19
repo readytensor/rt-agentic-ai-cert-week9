@@ -1,12 +1,9 @@
 from pprint import pprint
-from typing import Dict, Any, Optional
+from typing import Dict, Any
 
 try:
     from rich.console import Console
     from rich.panel import Panel
-    from rich.table import Table
-    from rich.text import Text
-    from rich import print as rprint
 
     RICH_AVAILABLE = True
 except ImportError:
@@ -303,7 +300,7 @@ def print_a3_response_detailed(response: Dict[str, Any]) -> Dict[str, Any]:
             print(f"  {feedback}")
 
     # Tag generation details
-    print(f"\nTag Generation Details:")
+    print("\nTag Generation Details:")
     print(f"  LLM tags: {len(response.get('llm_tags', []))}")
     print(f"  SpaCy tags: {len(response.get('spacy_tags', []))}")
     print(f"  Gazetteer tags: {len(response.get('gazetteer_tags', []))}")
