@@ -1,6 +1,8 @@
 import pytest
 from unittest.mock import MagicMock
 from langchain_core.messages import HumanMessage
+from nodes.output_types import Reference  # Import your Reference model
+
 from nodes.a3_nodes import make_references_selector_node
 from consts import (
     REFERENCES_SELECTOR_MESSAGES,
@@ -43,18 +45,17 @@ def references_selector_state():
 
 @pytest.fixture
 def mock_selected_references():
-    """Mock LLM response with reference objects that have url, title, page_content attributes."""
     return [
-        {
-            "url": "https://example1.com/ml-paper",
-            "title": "Machine Learning Fundamentals",
-            "page_content": "This paper discusses the fundamentals of machine learning algorithms...",
-        },
-        {
-            "url": "https://example2.com/neural-nets",
-            "title": "Neural Networks in Practice",
-            "page_content": "Neural networks have revolutionized the field of artificial intelligence...",
-        },
+        Reference(
+            url="https://example.com/article1",
+            title="Article 1",
+            page_content="This is the first article content."
+        ),
+        Reference(
+            url="https://example.com/article2",
+            title="Article 2",
+            page_content="Second article content."
+        ),
     ]
 
 
@@ -63,16 +64,17 @@ def expected_selected_references():
     """Expected output format after processing the mock references."""
     return [
         {
-            "url": "https://example1.com/ml-paper",
-            "title": "Machine Learning Fundamentals",
-            "page_content": "This paper discusses the fundamentals of machine learning algorithms...",
+            "url": "https://example.com/article1",
+            "title": "Article 1", 
+            "page_content": "This is the first article content.",
         },
         {
-            "url": "https://example2.com/neural-nets",
-            "title": "Neural Networks in Practice",
-            "page_content": "Neural networks have revolutionized the field of artificial intelligence...",
+            "url": "https://example.com/article2",
+            "title": "Article 2",
+            "page_content": "Second article content.",
         },
     ]
+
 
 
 def test_references_selector_node_skips_when_already_approved(
@@ -291,31 +293,32 @@ def test_references_selector_node_handles_missing_references_attribute(
     with pytest.raises(AttributeError):
         node(references_selector_state)
 
-
 def test_references_selector_node_handles_malformed_llm_response_objects(
     monkeypatch, references_selector_state
 ):
     """Test that node handles reference objects missing required attributes."""
-    # Create mock references with missing attributes
-    malformed_ref1 = {
-        "url": "https://example.com",
-    }
-    malformed_ref2 = {
-        "title": "Some Title",
-    }
+    # Create objects that will actually cause AttributeError when accessing missing attributes
+    class MalformedRef1:
+        def __init__(self):
+            self.url = "https://example.com"
+            # Missing title and page_content attributes
+    
+    class MalformedRef2:
+        def __init__(self):
+            self.title = "Some Title"
+            # Missing url and page_content attributes
+    
     # Create a valid reference for comparison
-    valid_ref = {
-        "url": "https://valid-example.com",
-        "title": "Valid Reference",
-        "page_content": "This is valid content",
-    }
+    class ValidRef:
+        def __init__(self):
+            self.url = "https://valid-example.com"
+            self.title = "Valid Reference"
+            self.page_content = "This is valid content"
+
+    malformed_refs = [MalformedRef1(), MalformedRef2(), ValidRef()]
 
     mock_llm_obj = MagicMock()
-    mock_llm_obj.with_structured_output.return_value.invoke.return_value.references = [
-        malformed_ref1,
-        malformed_ref2,
-        valid_ref,
-    ]
+    mock_llm_obj.with_structured_output.return_value.invoke.return_value.references = malformed_refs
 
     monkeypatch.setattr("nodes.a3_nodes.get_llm", lambda _: mock_llm_obj)
 
