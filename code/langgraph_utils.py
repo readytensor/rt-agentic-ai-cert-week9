@@ -7,24 +7,6 @@ from llm import get_llm
 from paths import OUTPUTS_DIR
 
 
-def with_llm_node(
-    llm_model: str,
-    handler_factory: Callable[[Any], Callable[[Dict[str, Any]], Dict[str, Any]]],
-) -> Callable[[Dict[str, Any]], Dict[str, Any]]:
-    """
-    Creates a LangGraph-compatible node by injecting an LLM into a handler factory.
-
-    Args:
-        llm_model: Name of the LLM model.
-        handler_factory: A function that accepts an LLM instance and returns a node function.
-
-    Returns:
-        A node function compatible with LangGraph.
-    """
-    llm = get_llm(llm_model)
-    return handler_factory(llm)
-
-
 def save_graph_visualization(
     graph: StateGraph,
     save_dir: str = OUTPUTS_DIR,
