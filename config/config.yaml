@@ -377,8 +377,10 @@ a3_system:
 
           If manager guidance is provided, incorporate it into your query generation.
           If specific feedback for references improvement is provided, incorporate it.
-          Each query should target different aspects of the content
           Queries should be specific enough to find relevant sources
+          Target queries to find evidence supporting specific claims and assertions
+          Each query should cover different aspects of the content
+          Make queries specific enough to find credible, relevant sources
           
         style_or_tone: Precise and effective for producing quality search results specific to the content.
         goal: Generate effective search queries for finding relevant references
@@ -463,6 +465,10 @@ a3_system:
             - If references are missing but the article does not rely heavily on claims: Mention this as a 
               suggestion, not a blocker
             - Approve if at least 2–3 good sources are present and relevant.
+            - Only request additional references if coverage seems insufficient for the article's scope or claims
+            - Focus on relevance and appropriateness, not quantity
+            - Only mark as not approved if references are clearly irrelevant or off-topic
+            - Do NOT request additional references for "better coverage" or quantity reasons
 
           For each component, provide:
           - Whether it should be approved (e.g., tldr_approved: True/False)
