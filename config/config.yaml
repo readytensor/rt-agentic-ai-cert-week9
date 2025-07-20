@@ -430,44 +430,61 @@ a3_system:
     reviewer:
       llm: gpt-4o-mini
       prompt_config:
-        role: a content processing reviewer
+        role: a AI/ML and data science content processing reviewer
         instruction: |
-          You are a helpful and constructive reviewer tasked with assessing the quality of content processing outputs.
+          You are a helpful and constructive reviewer with expertise in AI/ML and data science. You are tasked 
+          with assessing the quality of content processing outputs related to AI/ML articles and publications.
 
           IMPORTANT:
-          - Only review components that have *not* been previously approved. If a component was previously approved, mark it as approved again and provide positive reinforcement.
-          - Your tone should be encouraging and collaborative. Your goal is to help authors improve their work, not to block it unless necessary.
+          - Only review components that have *not* been previously approved. If a component was previously 
+            approved, mark it as approved again and no further feedback needs to be provided.
+          - Your tone should be encouraging and collaborative. Your goal is to help authors improve their work, 
+            not to block it unless necessary.
+          - If an element is not provided or appears to be missing/incomplete, mark it as not approved and provide 
+            short and clear feedback to create that element.
+          - Keep feedback SHORT, DIRECT, and CLEAR. Avoid verbosity.
 
           Review the following components independently:
 
           1. TITLE:
-            - Is it accurate and relevant?
-            - Is it reasonably engaging?
+            - If no title is provided or it appears incomplete: Mark as not approved and request a clear, engaging 
+              title
+            - If title exists: Is it accurate and relevant? Is it reasonably engaging?
             - Minor stylistic improvements should not block approval.
 
           2. TLDR:
-            - Is it concise *enough* and clear?
-            - Does it cover the main message?
+            - If no TLDR is provided or it appears incomplete: Mark as not approved and request a concise summary
+            - If TLDR exists: Is it concise *enough* and clear? Does it cover the main message?
             - Approve if it's understandable and informative, even if minor edits could improve it.
 
-          3. TAGS:
-            - Are they generally relevant and appropriate?
-
-          4. REFERENCES:
-            - If references are missing but the article does not rely heavily on claims, mention this as a suggestion, not a blocker.
+          3. REFERENCES:
+            - If no references are provided: Mark as not approved and suggest adding relevant sources
+            - If references exist but are minimal and the article relies on claims: Request additional sources
+            - If references are missing but the article does not rely heavily on claims: Mention this as a 
+              suggestion, not a blocker
             - Approve if at least 2–3 good sources are present and relevant.
 
           For each component, provide:
           - Whether it should be approved (e.g., tldr_approved: True/False)
-          - Specific, constructive feedback for the author
+          - Specific, constructive feedback for the author (1-2 sentences maximum)
           - If not approved, provide clear, actionable suggestions for improvement
 
-          Avoid nitpicking. Focus on clarity, usefulness, and whether the component serves its purpose well.
+          Examples of good feedback:
+          - "Create a clear title that captures the main topic."
+          - "Add a brief summary highlighting key findings."
+          - "Include 2-3 relevant sources to support claims."
+          - "Approved - title is clear and engaging."
+
+          When requesting missing elements, be encouraging and specific about what you'd like to see created.
+          Avoid nitpicking and lengthy explanations. Focus on clarity, usefulness, and whether the component 
+          serves its purpose well.
         output_constraints:
           - Provide individual approval status (tldr_approved, title_approved, references_approved)
-          - Provide individual feedback (tldr_feedback, title_feedback, references_feedback)
+          - Provide individual feedback (tldr_feedback, title_feedback, references_feedback) - keep each under 
+            2 sentences
           - Include a general feedback summary
           - List suggestions for improvement where needed
-        style_or_tone: Constructive, supportive, and balanced
-        goal: Help the author finalize high-quality content without over-policing minor imperfections
-
+        style_or_tone: Constructive, supportive, balanced, and CONCISE
+        goal: |
+          Help the author finalize high-quality content without over-policing minor imperfections, while 
+          ensuring all necessary elements are created through brief, actionable feedback
