@@ -61,6 +61,57 @@ Apply everything you've learned by implementing a complete testing suite for you
 
 ## Repository Structure
 
+```txt
+rt-agentic-ai-cert-week9/
+├── code/
+│   ├── consts.py                             # Shared constant definitions
+│   ├── display_utils.py                      # Formatting helpers for output visualization
+│   ├── langgraph_utils.py                    # LangGraph graph visualizer
+│   ├── lesson5_guardrails.py                 # Lesson 5: Runtime safety and validation via Guardrails
+│   ├── lesson6_giskard.py                    # Lesson 6: Bias & security scanning with Giskard
+│   ├── llm.py                                # LLM wrapper for OpenAI, Groq, etc.
+│   ├── prompt_builder.py                     # Modular prompt construction helpers
+│   ├── run_a3_system.py                      # Run the A3 multi-agent system (Module 2 case study)
+│   ├── run_tag_gen_system.py                 # Run the tag generation system (single-agent pipeline)
+│   ├── utils.py                              # General-purpose utilities
+│   ├── graphs/
+│   │   ├── a3_graph.py                       # LangGraph workflow for A3 multi-agent system
+│   │   └── tag_generation_graph.py           # LangGraph workflow for the tag generation agent
+│   ├── nodes/
+│   │   ├── a3_nodes.py                       # All node definitions for A3 system (LLM + routing)
+│   │   ├── node_utils.py                     # Reusable node prompt/message helpers
+│   │   ├── output_types.py                   # LangChain structured output schemas
+│   │   └── tag_generation_nodes.py           # All nodes for the tag generation system
+│   ├── states/
+│   │   ├── a3_state.py                       # State class + initializer for A3 system
+│   │   └── tag_generation_state.py           # State class + initializer for tag generation system
+├── config/                                   # Prompt configs, gazetteers, reasoning strategies
+│   ├── config.yaml
+│   ├── gazetteer_entities.yaml
+│   └── reasoning.yaml
+├── data/                                      # Input markdown files for publication examples
+│   ├── publication_example1.md
+│   └── ...
+├── lessons/                                   # Lesson notebooks and supplementary content
+├── outputs/                                   # Output logs, results, or final artifacts
+├── tests/
+│   ├── test_graphs/                           # Tests for LangGraph wiring and flows
+│   ├── test_nodes/
+│   │   ├── a3_system/                         # Unit tests for A3 system nodes
+│   │   ├── tag_generation/                    # Unit tests for tag generation nodes
+│   │   └── conftest.py                        # Shared fixtures for node tests
+│   ├── test_states/                           # Tests for state initializers and logic
+│   ├── test_utils/                            # Tests for prompt builder, node utils, etc.
+│   └── conftest.py                            # Global pytest fixtures
+├── .env.example                               # Example environment file (e.g., API keys)
+├── .gitignore
+├── LICENSE
+├── README.md                                  # You are here
+├── pytest.ini                                 # Pytest configuration (e.g., warning suppression)
+└── requirements.txt                           # Python dependencies
+
+```
+
 ---
 
 ## Installation & Setup
@@ -91,6 +142,44 @@ Apply everything you've learned by implementing a complete testing suite for you
 ## Running the Evaluation Examples
 
 Each code example is runnable as a standalone script:
+
+---
+
+## Tests
+
+This repo includes comprehensive unit tests for all major components, including nodes, state management, and utility functions.
+
+```bash
+pytest
+```
+
+Test organization:
+
+```txt
+tests/
+├── test_graphs/                            # Tests for LangGraph-based workflows
+├── test_nodes/
+│   ├── a3_system/                          # Unit tests for A3 system nodes (e.g., manager, reviewer)
+│   ├── tag_generation/                     # Unit tests for tag generation nodes (gazetteer, spaCy, LLM, etc.)
+│   └── conftest.py                         # Node-level shared fixtures
+├── test_states/                            # Tests for state initialization
+├── test_utils/                             # Tests for utilities like prompt builders and tavily search function
+└── conftest.py                             # Global fixtures
+```
+
+- To run a specific group of tests:
+
+  ```bash
+  pytest tests/test_nodes/tag_generation/
+  ```
+
+- To see detailed output with logs and print statements:
+
+  ```bash
+  pytest -s -v
+  ```
+
+All tests use `pytest` and follow best practices for mocking LLM calls when needed.
 
 ---
 
