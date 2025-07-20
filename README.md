@@ -70,6 +70,7 @@ rt-agentic-ai-cert-week9/
 │   ├── lesson5_guardrails.py                 # Lesson 5: Runtime safety and validation via Guardrails
 │   ├── lesson6_giskard.py                    # Lesson 6: Bias & security scanning with Giskard
 │   ├── llm.py                                # LLM wrapper for OpenAI, Groq, etc.
+│   ├── paths.py                              # Standardized file path management
 │   ├── prompt_builder.py                     # Modular prompt construction helpers
 │   ├── run_a3_system.py                      # Run the A3 multi-agent system (Module 2 case study)
 │   ├── run_tag_gen_system.py                 # Run the tag generation system (single-agent pipeline)
