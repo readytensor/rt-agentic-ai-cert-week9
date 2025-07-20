@@ -24,3 +24,27 @@ def load_publication_example(example_number: int) -> str:
     full_path = os.path.join(DATA_DIR, example_fpath)
     with open(full_path, "r", encoding="utf-8") as f:
         return f.read()
+
+
+def load_toxic_example() -> str:
+    """
+    Load a toxic example text file.
+
+    Returns:
+        The content of the toxic example file as a string.
+    """
+    example_path = os.path.join(DATA_DIR, "toxic_example.md")
+    with open(example_path, "r", encoding="utf-8") as f:
+        return f.read()
+
+
+def load_unusual_prompt_example() -> str:
+    """
+    Load a unusual prompt example text file.
+
+    Returns:
+        The content of the unusual prompt example file as a string.
+    """
+    example_path = os.path.join(DATA_DIR, "unusual_prompt_example.md")
+    with open(example_path, "r", encoding="utf-8") as f:
+        return f.read()
