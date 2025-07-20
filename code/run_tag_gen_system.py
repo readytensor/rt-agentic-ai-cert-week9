@@ -19,7 +19,7 @@ if __name__ == "__main__":
     # -------------------------------------------------------------------------------
 
     # Example usage
-    sample_text = load_publication_example(4)  # ⚠️ CAUTION: SEE NOTE ABOVE
+    sample_text = load_publication_example(1)  # ⚠️ CAUTION: SEE NOTE ABOVE
 
     # Load tag generation specific config
     config = load_config()
