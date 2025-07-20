@@ -58,7 +58,6 @@ def mock_selected_references():
     ]
 
 
-
 @pytest.fixture
 def expected_selected_references():
     """Expected output format after processing the mock references."""
