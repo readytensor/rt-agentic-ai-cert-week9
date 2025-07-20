@@ -252,7 +252,11 @@ def make_references_selector_node(
         )
         cleaned_references = []
         for ref in returned_references:
-            if not ref.get("url") or not ref.get("title") or not ref.get("page_content"):
+            if (
+                not ref.get("url")
+                or not ref.get("title")
+                or not ref.get("page_content")
+            ):
                 print(f"⚠️ Skipping malformed reference: {ref}")
                 continue
             cleaned_references.append(
@@ -302,10 +306,18 @@ def make_reviewer_node(
             raise ValueError("Input text cannot be empty or None.")
 
         print("📝 Reviewer: Generating feedback...")
-        title = state.get(TITLE, "Not generated")
-        tldr = state.get(TLDR, "Not generated")
+        title = state.get(TITLE, None)
+        if title is None or title.strip() == "":
+            title = "No title provided"
+        tldr = state.get(TLDR, None)
+        if tldr is None or tldr.strip() == "":
+            tldr = "No TLDR provided"
         selected_references = state.get(SELECTED_REFERENCES, [])
-        formatted_references = format_references_for_prompt(selected_references)
+        if not selected_references:
+            selected_references = []
+            formatted_references = "No references provided."
+        else:
+            formatted_references = format_references_for_prompt(selected_references)
 
         # Build comprehensive input data for review
         review_input = f"""
@@ -315,7 +327,8 @@ def make_reviewer_node(
         """
         review_message = HumanMessage(
             f"Please review the following content and provide feedback:\n\n{review_input}\n\n"
-            "If you have any specific feedback for the TL;DR, title, or references, please include it."
+            "If you have any specific feedback for the TL;DR, title, or references, please "
+            "include it."
         )
         input_messages = [
             *state[REVIEWER_MESSAGES],
