@@ -95,6 +95,10 @@ def make_title_generator_node(
             print("🎯 Title Generator: Already approved, skipping...")
             return {}
 
+        input_text = state[INPUT_TEXT]
+        if input_text is None or input_text.strip() == "":
+            raise ValueError("Input text cannot be empty or None.")
+
         print("🎯 Title Generator: Creating title...")
         input_messages = [
             *state[TITLE_GEN_MESSAGES],
@@ -131,6 +135,11 @@ def make_tldr_generator_node(
         if state[TLDR_APPROVED] is True:
             print("📝 TL;DR Generator: Already approved, skipping...")
             return {}
+
+        input_text = state[INPUT_TEXT]
+        if input_text is None or input_text.strip() == "":
+            raise ValueError("Input text cannot be empty or None.")
+
         print("🎯 TL;DR Generator: Creating TL;DR...")
         input_messages = [
             *state[TLDR_GEN_MESSAGES],
@@ -166,6 +175,10 @@ def make_references_generator_node(
         if state.get(REFERENCES_APPROVED, False):
             print("📚 References Generator: Already approved, skipping...")
             return {}
+
+        input_text = state[INPUT_TEXT]
+        if input_text is None or input_text.strip() == "":
+            raise ValueError("Input text cannot be empty or None.")
 
         print("📚 References Generator: Extracting references...")
         input_messages = [
@@ -212,6 +225,10 @@ def make_references_selector_node(
             print("📚 References Selector: Already approved, skipping...")
             return {}
 
+        input_text = state[INPUT_TEXT]
+        if input_text is None or input_text.strip() == "":
+            raise ValueError("Input text cannot be empty or None.")
+
         print("📚 References Selector: Selecting references...")
         candidate_references = state.get(CANDIDATE_REFERENCES, [])
         if not candidate_references:
@@ -230,19 +247,23 @@ def make_references_selector_node(
             candidate_refs_message,
             _get_begin_task_message(),
         ]
-        selected_references = (
+        returned_references = (
             llm.with_structured_output(References).invoke(input_messages).references
         )
-        selected_references = [
-            {
-                "url": ref.url,
-                "title": ref.title,
-                "page_content": ref.page_content,
-            }
-            for ref in selected_references
-        ]
+        cleaned_references = []
+        for ref in returned_references:
+            if not ref.get("url") or not ref.get("title") or not ref.get("page_content"):
+                print(f"⚠️ Skipping malformed reference: {ref}")
+                continue
+            cleaned_references.append(
+                {
+                    "url": ref["url"],
+                    "title": ref["title"],
+                    "page_content": ref["page_content"],
+                }
+            )
         return {
-            SELECTED_REFERENCES: selected_references,
+            SELECTED_REFERENCES: cleaned_references,
         }
 
     return references_selector_node
@@ -276,6 +297,10 @@ def make_reviewer_node(
                 REFERENCES_APPROVED: True,
             }
 
+        input_text = state[INPUT_TEXT]
+        if input_text is None or input_text.strip() == "":
+            raise ValueError("Input text cannot be empty or None.")
+
         print("📝 Reviewer: Generating feedback...")
         title = state.get(TITLE, "Not generated")
         tldr = state.get(TLDR, "Not generated")
@@ -288,13 +313,18 @@ def make_reviewer_node(
         # TLDR(s):\n {tldr} \n ------------- \n
         # References:\n {formatted_references} \n ------------- \n
         """
-        messages = state[REVIEWER_MESSAGES] + [
-            HumanMessage(
-                f"Please review the following content and provide feedback:\n\n{review_input}\n\n"
-                "If you have any specific feedback for the TL;DR, title, or references, please include it."
-            )
+        review_message = HumanMessage(
+            f"Please review the following content and provide feedback:\n\n{review_input}\n\n"
+            "If you have any specific feedback for the TL;DR, title, or references, please include it."
+        )
+        input_messages = [
+            *state[REVIEWER_MESSAGES],
+            _get_manager_brief_message(state),
+            _get_input_text_message(state),
+            review_message,
+            _get_begin_task_message(),
         ]
-        response = llm.with_structured_output(ReviewOutput).invoke(messages)
+        response = llm.with_structured_output(ReviewOutput).invoke(input_messages)
         revision_round += 1
 
         # Handle individual component approvals
