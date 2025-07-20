@@ -65,6 +65,8 @@ def format_references_for_prompt(references: list[dict[str, str]]) -> str:
     Returns:
         str: A formatted string representation of the references.
     """
+    if not references or len(references) == 0:
+        return "No references provided.\n\n"
     return "\n\n".join(
         f"- Title: {ref['title']}\n  URL: {ref['url']}\n  Content:\n{ref.get('page_content', '')[:5000]}"
         for ref in references
