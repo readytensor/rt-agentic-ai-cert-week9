@@ -253,17 +253,17 @@ def make_references_selector_node(
         cleaned_references = []
         for ref in returned_references:
             if (
-                not ref.get("url")
-                or not ref.get("title")
-                or not ref.get("page_content")
+                not ref.url
+                or not ref.title
+                or not ref.page_content
             ):
                 print(f"⚠️ Skipping malformed reference: {ref}")
                 continue
             cleaned_references.append(
                 {
-                    "url": ref["url"],
-                    "title": ref["title"],
-                    "page_content": ref["page_content"],
+                    "url": ref.url,
+                    "title": ref.title,
+                    "page_content": ref.page_content,
                 }
             )
         return {
