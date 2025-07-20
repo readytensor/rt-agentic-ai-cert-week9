@@ -21,6 +21,11 @@ from consts import (
 from paths import GAZETTEER_ENTITIES_FILE_PATH
 from utils import load_config
 from .output_types import Entities
+from .node_utils import (
+    _get_input_text_message,
+    _get_manager_brief_message,
+    _get_begin_task_message,
+)
 
 EXCLUDED_SPACY_ENTITY_TYPES = {"DATE", "CARDINAL"}
 
@@ -37,9 +42,19 @@ def make_llm_tag_generator_node(
         """
         Extracts tags from the input text using the LLM.
         """
+        # Prepare the input for the LLM
+        input_text = state[INPUT_TEXT]
+        if input_text is None or input_text.strip() == "":
+            raise ValueError("Input text cannot be empty or None.")
+        input_messages = [
+            *state[LLM_TAGS_GEN_MESSAGES],
+            _get_manager_brief_message(state),
+            _get_input_text_message(state),
+            _get_begin_task_message(),
+        ]
         tags = (
             llm.with_structured_output(Entities)
-            .invoke(state[LLM_TAGS_GEN_MESSAGES])
+            .invoke(input_messages)
             .model_dump()["entities"]
         )
 
@@ -245,8 +260,14 @@ def make_tag_selector_node(
         """
         Uses the LLM to select the most important tags from the candidate list.
         """
+        input_text = state[INPUT_TEXT]
+        if input_text is None or input_text.strip() == "":
+            raise ValueError("Input text cannot be empty or None.")
+
         candidate_tags = state.get(CANDIDATE_TAGS, [])
-        base_messages = state.get(TAGS_SELECTOR_MESSAGES, [])
+        if not candidate_tags:
+            print("No candidate tags available for selection.")
+            return {SELECTED_TAGS: []}
 
         selection_instruction = HumanMessage(
             content=(
@@ -254,9 +275,18 @@ def make_tag_selector_node(
                 f"Please return a refined list of the most important tags (maximum {max_tags})."
             )
         )
-        full_prompt = base_messages + [selection_instruction]
 
-        response = llm.with_structured_output(Entities).invoke(full_prompt).model_dump()
+        input_messages = [
+            *state[TAGS_SELECTOR_MESSAGES],
+            _get_manager_brief_message(state),
+            _get_input_text_message(state),
+            selection_instruction,
+            _get_begin_task_message(),
+        ]
+
+        response = (
+            llm.with_structured_output(Entities).invoke(input_messages).model_dump()
+        )
 
         tags = response.get("entities", [])
         cleaned_tags = []

@@ -1,7 +1,9 @@
 import pytest
 from unittest.mock import MagicMock
+from langchain_core.messages import HumanMessage
+
 from nodes.tag_generation_nodes import make_llm_tag_generator_node
-from consts import LLM_TAGS, LLM_TAGS_GEN_MESSAGES
+from consts import LLM_TAGS, LLM_TAGS_GEN_MESSAGES, INPUT_TEXT, MANAGER_BRIEF
 
 
 def test_llm_tag_generator_node_returns_cleaned_tags(monkeypatch):
@@ -25,16 +27,38 @@ def test_llm_tag_generator_node_returns_cleaned_tags(monkeypatch):
     node = make_llm_tag_generator_node(llm_model="mock-model")
     result = node(
         {
-            LLM_TAGS_GEN_MESSAGES: [
-                "some message"
-            ],  # Can be anything; not used in mock
+            LLM_TAGS_GEN_MESSAGES: ["some message"],
+            INPUT_TEXT: "Sample input text",
+            MANAGER_BRIEF: "This is the manager's brief for your review.",
         }
     )
 
+    # Verify the LLM was called with the right structure
+    mock_llm_obj.with_structured_output.return_value.invoke.assert_called_once()
+    call_args = mock_llm_obj.with_structured_output.return_value.invoke.call_args[0][0]
+
+    # Verify message structure instead of exact content
+    assert isinstance(call_args, list)
+    assert len(call_args) == 4  # system message + 3 helper function messages
+
+    # Verify first message is from LLM_TAGS_GEN_MESSAGES
+    assert call_args[0] == "some message"
+
+    # Verify the other messages are HumanMessage objects with expected content patterns
+
+    assert isinstance(call_args[1], HumanMessage)  # manager brief message
+    assert isinstance(call_args[2], HumanMessage)  # input text message
+    assert isinstance(call_args[3], HumanMessage)  # begin task message
+
+    # Verify content patterns
+    assert "manager's brief" in call_args[1].content
+    assert "input text" in call_args[2].content
+    assert "perform your task" in call_args[3].content
+
+    # Verify output processing
     assert LLM_TAGS in result
     tags = result[LLM_TAGS]
     assert len(tags) == 2
-
     assert {"name": "mnist", "type": "dataset"} in tags
     assert {"name": "transformer", "type": "algorithm"} in tags
 
@@ -60,9 +84,8 @@ def test_llm_tag_generator_node_ignores_malformed_tags(monkeypatch):
     node = make_llm_tag_generator_node("mock-model")
     result = node(
         {
-            LLM_TAGS_GEN_MESSAGES: [
-                "some message"
-            ],  # Can be anything; not used in mock
+            LLM_TAGS_GEN_MESSAGES: ["some message"],
+            INPUT_TEXT: "Sample input text",
         }
     )
 
@@ -88,7 +111,12 @@ def test_llm_tag_generator_node_handles_empty_entities_list(monkeypatch):
     monkeypatch.setattr("nodes.tag_generation_nodes.get_llm", lambda _: mock_llm_obj)
 
     node = make_llm_tag_generator_node(llm_model="mock-model")
-    result = node({LLM_TAGS_GEN_MESSAGES: ["some message"]})
+    result = node(
+        {
+            LLM_TAGS_GEN_MESSAGES: ["some message"],
+            INPUT_TEXT: "Sample input text",
+        }
+    )
 
     assert LLM_TAGS in result
     assert result[LLM_TAGS] == []
@@ -109,7 +137,12 @@ def test_llm_tag_generator_node_handles_missing_entities_key(monkeypatch):
 
     # Should raise KeyError when trying to access ['entities']
     with pytest.raises(KeyError):
-        node({LLM_TAGS_GEN_MESSAGES: ["some message"]})
+        node(
+            {
+                LLM_TAGS_GEN_MESSAGES: ["some message"],
+                INPUT_TEXT: "Sample input text",
+            }
+        )
 
 
 def test_llm_tag_generator_node_handles_whitespace_only_names(monkeypatch):
@@ -131,7 +164,12 @@ def test_llm_tag_generator_node_handles_whitespace_only_names(monkeypatch):
     monkeypatch.setattr("nodes.tag_generation_nodes.get_llm", lambda _: mock_llm_obj)
 
     node = make_llm_tag_generator_node(llm_model="mock-model")
-    result = node({LLM_TAGS_GEN_MESSAGES: ["some message"]})
+    result = node(
+        {
+            LLM_TAGS_GEN_MESSAGES: ["some message"],
+            INPUT_TEXT: "Sample input text",
+        }
+    )
 
     assert LLM_TAGS in result
     # Only the valid name should remain
@@ -158,7 +196,12 @@ def test_llm_tag_generator_node_handles_special_characters(monkeypatch):
     monkeypatch.setattr("nodes.tag_generation_nodes.get_llm", lambda _: mock_llm_obj)
 
     node = make_llm_tag_generator_node(llm_model="mock-model")
-    result = node({LLM_TAGS_GEN_MESSAGES: ["some message"]})
+    result = node(
+        {
+            LLM_TAGS_GEN_MESSAGES: ["some message"],
+            INPUT_TEXT: "Sample input text",
+        }
+    )
 
     assert LLM_TAGS in result
     expected_tags = [
@@ -191,7 +234,12 @@ def test_llm_tag_generator_node_handles_very_long_names(monkeypatch):
     monkeypatch.setattr("nodes.tag_generation_nodes.get_llm", lambda _: mock_llm_obj)
 
     node = make_llm_tag_generator_node(llm_model="mock-model")
-    result = node({LLM_TAGS_GEN_MESSAGES: ["some message"]})
+    result = node(
+        {
+            LLM_TAGS_GEN_MESSAGES: ["some message"],
+            INPUT_TEXT: "Sample input text",
+        }
+    )
 
     assert LLM_TAGS in result
     assert len(result[LLM_TAGS]) == 2
@@ -221,7 +269,12 @@ def test_llm_tag_generator_node_handles_none_type_values(monkeypatch):
     # This might raise AttributeError when trying to call .lower() on None
     # Depending on your implementation preference, you might want to handle this
     with pytest.raises(AttributeError):
-        node({LLM_TAGS_GEN_MESSAGES: ["some message"]})
+        node(
+            {
+                LLM_TAGS_GEN_MESSAGES: ["some message"],
+                INPUT_TEXT: "Sample input text",
+            }
+        )
 
 
 def test_llm_tag_generator_node_propagates_llm_exceptions(monkeypatch):
@@ -236,7 +289,12 @@ def test_llm_tag_generator_node_propagates_llm_exceptions(monkeypatch):
     node = make_llm_tag_generator_node(llm_model="mock-model")
 
     with pytest.raises(Exception, match="LLM API Error"):
-        node({LLM_TAGS_GEN_MESSAGES: ["some message"]})
+        node(
+            {
+                LLM_TAGS_GEN_MESSAGES: ["some message"],
+                INPUT_TEXT: "Sample input text",
+            }
+        )
 
 
 def test_llm_tag_generator_node_handles_non_string_name_types(monkeypatch):
@@ -262,7 +320,12 @@ def test_llm_tag_generator_node_handles_non_string_name_types(monkeypatch):
 
     # This will likely raise AttributeError when trying to call .lower() on non-strings
     with pytest.raises(AttributeError):
-        node({LLM_TAGS_GEN_MESSAGES: ["some message"]})
+        node(
+            {
+                LLM_TAGS_GEN_MESSAGES: ["some message"],
+                INPUT_TEXT: "Sample input text",
+            }
+        )
 
 
 def test_llm_tag_generator_node_handles_large_entity_list(monkeypatch):
@@ -280,7 +343,12 @@ def test_llm_tag_generator_node_handles_large_entity_list(monkeypatch):
     monkeypatch.setattr("nodes.tag_generation_nodes.get_llm", lambda _: mock_llm_obj)
 
     node = make_llm_tag_generator_node(llm_model="mock-model")
-    result = node({LLM_TAGS_GEN_MESSAGES: ["some message"]})
+    result = node(
+        {
+            LLM_TAGS_GEN_MESSAGES: ["some message"],
+            INPUT_TEXT: "Sample input text",
+        }
+    )
 
     assert LLM_TAGS in result
     assert len(result[LLM_TAGS]) == 100
@@ -288,3 +356,55 @@ def test_llm_tag_generator_node_handles_large_entity_list(monkeypatch):
     # Verify first and last entries are properly cleaned
     assert result[LLM_TAGS][0] == {"name": "tag_0", "type": "type_0"}
     assert result[LLM_TAGS][-1] == {"name": "tag_99", "type": "type_4"}
+
+
+def test_llm_tag_generator_node_constructs_correct_messages(monkeypatch):
+    """Test that node constructs the correct message sequence for LLM."""
+    mock_invoke_output = {"entities": [{"name": "test", "type": "algorithm"}]}
+
+    mock_llm_obj = MagicMock()
+    mock_llm_obj.with_structured_output.return_value.invoke.return_value.model_dump.return_value = (
+        mock_invoke_output
+    )
+
+    # Mock helper functions with identifiable returns
+    monkeypatch.setattr("nodes.tag_generation_nodes.get_llm", lambda _: mock_llm_obj)
+    monkeypatch.setattr(
+        "nodes.tag_generation_nodes._get_manager_brief_message",
+        lambda state: "manager_message",
+    )
+    monkeypatch.setattr(
+        "nodes.tag_generation_nodes._get_input_text_message",
+        lambda state: "input_text_message",
+    )
+    monkeypatch.setattr(
+        "nodes.tag_generation_nodes._get_begin_task_message",
+        lambda: "begin_task_message",
+    )
+
+    node = make_llm_tag_generator_node(llm_model="mock-model")
+
+    initial_messages = ["system_message_1", "system_message_2"]
+    state = {
+        LLM_TAGS_GEN_MESSAGES: initial_messages,
+        INPUT_TEXT: "Sample input text for testing",
+    }
+
+    result = node(state)
+
+    # Verify the LLM was called with the correct message sequence
+    expected_messages = [
+        "system_message_1",  # from LLM_TAGS_GEN_MESSAGES
+        "system_message_2",  # from LLM_TAGS_GEN_MESSAGES
+        "manager_message",  # from _get_manager_brief_message
+        "input_text_message",  # from _get_input_text_message
+        "begin_task_message",  # from _get_begin_task_message
+    ]
+
+    mock_llm_obj.with_structured_output.return_value.invoke.assert_called_once_with(
+        expected_messages
+    )
+
+    # Also verify the result
+    assert LLM_TAGS in result
+    assert result[LLM_TAGS] == [{"name": "test", "type": "algorithm"}]

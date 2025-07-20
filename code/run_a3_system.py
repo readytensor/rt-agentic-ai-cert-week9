@@ -1,5 +1,4 @@
 from graphs.a3_graph import A3System
-
 from utils import load_publication_example, load_config
 from langgraph_utils import save_graph_visualization
 from display_utils import print_a3_response

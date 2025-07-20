@@ -4,6 +4,7 @@ from langchain_tavily import TavilySearch
 
 from states.a3_state import A3SystemState
 from llm import get_llm
+from .node_utils import execute_search_queries
 
 from consts import (
     INPUT_TEXT,
@@ -94,6 +95,10 @@ def make_title_generator_node(
             print("🎯 Title Generator: Already approved, skipping...")
             return {}
 
+        input_text = state[INPUT_TEXT]
+        if input_text is None or input_text.strip() == "":
+            raise ValueError("Input text cannot be empty or None.")
+
         print("🎯 Title Generator: Creating title...")
         input_messages = [
             *state[TITLE_GEN_MESSAGES],
@@ -103,9 +108,9 @@ def make_title_generator_node(
             _get_begin_task_message(),
         ]
         ai_response = llm.invoke(input_messages)
-        
+
         content = ai_response.content or ""
-    
+
         return {
             TITLE: content.strip(),
             TITLE_FEEDBACK: "",
@@ -130,6 +135,11 @@ def make_tldr_generator_node(
         if state[TLDR_APPROVED] is True:
             print("📝 TL;DR Generator: Already approved, skipping...")
             return {}
+
+        input_text = state[INPUT_TEXT]
+        if input_text is None or input_text.strip() == "":
+            raise ValueError("Input text cannot be empty or None.")
+
         print("🎯 TL;DR Generator: Creating TL;DR...")
         input_messages = [
             *state[TLDR_GEN_MESSAGES],
@@ -139,10 +149,10 @@ def make_tldr_generator_node(
             _get_begin_task_message(),
         ]
         ai_response = llm.invoke(input_messages)
-        content = ai_response.content.strip()
+        content = ai_response.content or ""
 
         return {
-            TLDR: content,
+            TLDR: content.strip(),
             TLDR_FEEDBACK: "",
         }
 
@@ -166,6 +176,10 @@ def make_references_generator_node(
             print("📚 References Generator: Already approved, skipping...")
             return {}
 
+        input_text = state[INPUT_TEXT]
+        if input_text is None or input_text.strip() == "":
+            raise ValueError("Input text cannot be empty or None.")
+
         print("📚 References Generator: Extracting references...")
         input_messages = [
             *state[REFERENCES_GEN_MESSAGES],
@@ -180,29 +194,11 @@ def make_references_generator_node(
             )
             print(f"✅ Queries to be executed: {queries}")
 
-            search_results = []
-            for query in queries:
-                print(f"🔍 Executing query: {query}")
-                try:
-                    result = TavilySearch(max_results=3).invoke(query)["results"]
-                except Exception as e:
-                    print(f"❌ Error executing query: {e}")
-                    continue
-                search_results.extend(result)
-                print(f"✅ Successfully executed query: {query}")
-
-            candidate_references = [
-                {
-                    "url": search_result["url"],
-                    "title": search_result["title"],
-                    "page_content": search_result["content"],
-                }
-                for search_result in search_results
-                if search_result["content"]  # Ensure content is not empty
-            ]
+            search_results = execute_search_queries(queries)
+            print(f"✅ # Search results obtained: {len(search_results)}")
             return {
                 REFERENCE_SEARCH_QUERIES: queries,
-                CANDIDATE_REFERENCES: candidate_references,
+                CANDIDATE_REFERENCES: search_results,
             }
         except Exception as e:
             print(f"❌ References extraction failed: {e}")
@@ -229,6 +225,10 @@ def make_references_selector_node(
             print("📚 References Selector: Already approved, skipping...")
             return {}
 
+        input_text = state[INPUT_TEXT]
+        if input_text is None or input_text.strip() == "":
+            raise ValueError("Input text cannot be empty or None.")
+
         print("📚 References Selector: Selecting references...")
         candidate_references = state.get(CANDIDATE_REFERENCES, [])
         if not candidate_references:
@@ -247,19 +247,27 @@ def make_references_selector_node(
             candidate_refs_message,
             _get_begin_task_message(),
         ]
-        selected_references = (
+        returned_references = (
             llm.with_structured_output(References).invoke(input_messages).references
         )
-        selected_references = [
-            {
-                "url": ref.url,
-                "title": ref.title,
-                "page_content": ref.page_content,
-            }
-            for ref in selected_references
-        ]
+        cleaned_references = []
+        for ref in returned_references:
+            if (
+                not ref.get("url")
+                or not ref.get("title")
+                or not ref.get("page_content")
+            ):
+                print(f"⚠️ Skipping malformed reference: {ref}")
+                continue
+            cleaned_references.append(
+                {
+                    "url": ref["url"],
+                    "title": ref["title"],
+                    "page_content": ref["page_content"],
+                }
+            )
         return {
-            SELECTED_REFERENCES: selected_references,
+            SELECTED_REFERENCES: cleaned_references,
         }
 
     return references_selector_node
@@ -293,11 +301,23 @@ def make_reviewer_node(
                 REFERENCES_APPROVED: True,
             }
 
+        input_text = state[INPUT_TEXT]
+        if input_text is None or input_text.strip() == "":
+            raise ValueError("Input text cannot be empty or None.")
+
         print("📝 Reviewer: Generating feedback...")
-        title = state.get(TITLE, "Not generated")
-        tldr = state.get(TLDR, "Not generated")
+        title = state.get(TITLE, None)
+        if title is None or title.strip() == "":
+            title = "No title provided"
+        tldr = state.get(TLDR, None)
+        if tldr is None or tldr.strip() == "":
+            tldr = "No TLDR provided"
         selected_references = state.get(SELECTED_REFERENCES, [])
-        formatted_references = format_references_for_prompt(selected_references)
+        if not selected_references:
+            selected_references = []
+            formatted_references = "No references provided."
+        else:
+            formatted_references = format_references_for_prompt(selected_references)
 
         # Build comprehensive input data for review
         review_input = f"""
@@ -305,13 +325,19 @@ def make_reviewer_node(
         # TLDR(s):\n {tldr} \n ------------- \n
         # References:\n {formatted_references} \n ------------- \n
         """
-        messages = state[REVIEWER_MESSAGES] + [
-            HumanMessage(
-                f"Please review the following content and provide feedback:\n\n{review_input}\n\n"
-                "If you have any specific feedback for the TL;DR, title, or references, please include it."
-            )
+        review_message = HumanMessage(
+            f"Please review the following content and provide feedback:\n\n{review_input}\n\n"
+            "If you have any specific feedback for the TL;DR, title, or references, please "
+            "include it."
+        )
+        input_messages = [
+            *state[REVIEWER_MESSAGES],
+            _get_manager_brief_message(state),
+            _get_input_text_message(state),
+            review_message,
+            _get_begin_task_message(),
         ]
-        response = llm.with_structured_output(ReviewOutput).invoke(messages)
+        response = llm.with_structured_output(ReviewOutput).invoke(input_messages)
         revision_round += 1
 
         # Handle individual component approvals

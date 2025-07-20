@@ -4,6 +4,11 @@ from langchain_core.messages import SystemMessage
 from typing_extensions import Annotated
 
 from prompt_builder import build_system_prompt_message
+from consts import (
+    LLM_TAGS_GENERATOR,
+    TAG_TYPE_ASSIGNER,
+    TAGS_SELECTOR,
+)
 
 
 class TagGenerationState(TypedDict):
@@ -46,29 +51,49 @@ def generate_tag_types_prompt(tag_types: List[Dict[str, str]]) -> str:
 
 
 def initialize_tag_generation_state(
-    llm_tags_generator_prompt_cfg: dict,
-    tag_type_assigner_prompt_cfg: dict,
-    tags_selector_prompt_cfg: dict,
-    tag_types: List[Dict[str, str]],
-    max_tags: int = 10,
+    config: dict,
     input_text: str = None,
 ) -> TagGenerationState:
-    """Initializes the state for the tag generation graph."""
+    """
+    Initializes the state for the tag generation graph.
+
+    Args:
+        config: Tag generation configuration dictionary
+        input_text: Optional input text for tag generation
+
+    Returns:
+        TagGenerationState with all values initialized
+    """
+    # Extract configuration values
+    agents = config["agents"]
+    tag_types = config["tag_types"]
+    max_tags = config["max_tags"]
+
+    # Build tag types prompt
     tag_types_prompt = generate_tag_types_prompt(tag_types)
+
+    # Build system messages
     llm_tags_gen_messages = [
-        SystemMessage(build_system_prompt_message(llm_tags_generator_prompt_cfg)),
+        SystemMessage(
+            build_system_prompt_message(agents[LLM_TAGS_GENERATOR]["prompt_config"])
+        ),
         SystemMessage(f"Here are the tag types you can assign:\n\n{tag_types_prompt}"),
     ]
     tag_type_assigner_messages = [
-        SystemMessage(build_system_prompt_message(tag_type_assigner_prompt_cfg)),
+        SystemMessage(
+            build_system_prompt_message(agents[TAG_TYPE_ASSIGNER]["prompt_config"])
+        ),
         SystemMessage(f"Here are the tag types you can assign:\n\n{tag_types_prompt}"),
     ]
     tags_selector_messages = [
-        SystemMessage(build_system_prompt_message(tags_selector_prompt_cfg)),
+        SystemMessage(
+            build_system_prompt_message(agents[TAGS_SELECTOR]["prompt_config"])
+        ),
         SystemMessage(
             f"Please select at most {max_tags} tags from the generated list."
         ),
     ]
+
     return TagGenerationState(
         input_text=input_text,
         llm_tags_gen_messages=llm_tags_gen_messages,
