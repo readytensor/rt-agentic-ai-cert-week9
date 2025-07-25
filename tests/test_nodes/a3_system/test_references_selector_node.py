@@ -49,12 +49,12 @@ def mock_selected_references():
         Reference(
             url="https://example.com/article1",
             title="Article 1",
-            page_content="This is the first article content."
+            page_content="This is the first article content.",
         ),
         Reference(
             url="https://example.com/article2",
             title="Article 2",
-            page_content="Second article content."
+            page_content="Second article content.",
         ),
     ]
 
@@ -65,7 +65,7 @@ def expected_selected_references():
     return [
         {
             "url": "https://example.com/article1",
-            "title": "Article 1", 
+            "title": "Article 1",
             "page_content": "This is the first article content.",
         },
         {
@@ -74,7 +74,6 @@ def expected_selected_references():
             "page_content": "Second article content.",
         },
     ]
-
 
 
 def test_references_selector_node_skips_when_already_approved(
@@ -293,21 +292,23 @@ def test_references_selector_node_handles_missing_references_attribute(
     with pytest.raises(AttributeError):
         node(references_selector_state)
 
+
 def test_references_selector_node_handles_malformed_llm_response_objects(
     monkeypatch, references_selector_state
 ):
     """Test that node handles reference objects missing required attributes."""
+
     # Create objects that will actually cause AttributeError when accessing missing attributes
     class MalformedRef1:
         def __init__(self):
             self.url = "https://example.com"
             # Missing title and page_content attributes
-    
+
     class MalformedRef2:
         def __init__(self):
             self.title = "Some Title"
             # Missing url and page_content attributes
-    
+
     # Create a valid reference for comparison
     class ValidRef:
         def __init__(self):
@@ -318,7 +319,9 @@ def test_references_selector_node_handles_malformed_llm_response_objects(
     malformed_refs = [MalformedRef1(), MalformedRef2(), ValidRef()]
 
     mock_llm_obj = MagicMock()
-    mock_llm_obj.with_structured_output.return_value.invoke.return_value.references = malformed_refs
+    mock_llm_obj.with_structured_output.return_value.invoke.return_value.references = (
+        malformed_refs
+    )
 
     monkeypatch.setattr("nodes.a3_nodes.get_llm", lambda _: mock_llm_obj)
 
