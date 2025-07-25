@@ -1,13 +1,66 @@
 import yaml
 import os
+import json
 
 
 from paths import CONFIG_FILE_PATH, DATA_DIR
 
 
 def load_config(config_path: str = CONFIG_FILE_PATH):
+    """Load the configuration file.
+
+    Args:
+        config_path (str, optional): Path to the config file. Defaults to CONFIG_FILE_PATH.
+
+    Returns:
+        dict: Loaded configuration.
+    """
     with open(config_path, "r", encoding="utf-8") as f:
         return yaml.safe_load(f)
+
+
+def read_json(filepath: str):
+    """
+    Reads a JSON file.
+
+    Args:
+        filepath (str): Path to the JSON file.
+
+    Returns:
+        dict: JSON data.
+    """
+    with open(filepath, "r", encoding="utf-8") as file:
+        data = json.load(file)
+    return data
+
+
+def read_yaml(config_path: str):
+    """
+    Reads a YAML configuration file.
+
+    Args:
+        config_path (str): Path to the config file.
+
+    Returns:
+        dict: Loaded configuration.
+    """
+    with open(config_path, "r", encoding="utf-8") as f:
+        return yaml.safe_load(f)
+
+
+def read_json(filepath: str):
+    """
+    Reads a JSON file.
+
+    Args:
+        filepath (str): Path to the JSON file.
+
+    Returns:
+        dict: JSON data.
+    """
+    with open(filepath, "r", encoding="utf-8") as file:
+        data = json.load(file)
+    return data
 
 
 def load_publication_example(example_number: int) -> str:
