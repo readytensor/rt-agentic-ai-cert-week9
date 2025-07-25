@@ -164,7 +164,7 @@ a3_system:
           The resulting brief will help downstream agents stay in sync while producing 
           article components.
         output_constraints:
-          - Keep the brief under 200 words
+          - Keep the brief under 200 words. Make it ideally around 100 words
           - Ground all information in the input text
           - Avoid speculative or fabricated content
           - Do not exaggerate the scope of the article
