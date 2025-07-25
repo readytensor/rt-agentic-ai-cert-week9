@@ -257,12 +257,14 @@ def make_references_selector_node(
                 if not ref.url or not ref.title or not ref.page_content:
                     print(f"⚠️ Skipping reference with missing/empty attributes")
                     continue
-                    
-                cleaned_references.append({
-                    "url": ref.url,
-                    "title": ref.title,
-                    "page_content": ref.page_content,
-                })
+
+                cleaned_references.append(
+                    {
+                        "url": ref.url,
+                        "title": ref.title,
+                        "page_content": ref.page_content,
+                    }
+                )
             except AttributeError as e:
                 print(f"⚠️ Skipping malformed reference due to missing attribute: {e}")
                 continue
