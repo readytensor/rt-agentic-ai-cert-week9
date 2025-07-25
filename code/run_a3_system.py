@@ -2,7 +2,8 @@ from graphs.a3_graph import A3System
 from utils import load_publication_example, load_config
 from langgraph_utils import save_graph_visualization
 from display_utils import print_a3_response
-
+from save_utils import save_a3_response_to_markdown
+from paths import OUTPUTS_DIR
 
 if __name__ == "__main__":
 
@@ -19,7 +20,8 @@ if __name__ == "__main__":
     # -------------------------------------------------------------------------------
 
     # Example usage
-    sample_text = load_publication_example(1)  # ⚠️ CAUTION: SEE NOTE ABOVE
+    example_id = 4  # Change to 2 or 3 for larger examples
+    sample_text = load_publication_example(example_id)  # ⚠️ CAUTION: SEE NOTE ABOVE
 
     a3_config = load_config()["a3_system"]
 
@@ -28,3 +30,15 @@ if __name__ == "__main__":
 
     response = a3_system.process_article(sample_text)
     print_a3_response(response)
+
+    # Save to files (new functionality)
+    markdown_path = save_a3_response_to_markdown(
+        response,
+        output_dir=OUTPUTS_DIR,
+        filename=f"a3_response_{example_id}.md",
+        include_debug=True,  # Include debug info
+        include_metadata=True,  # Include metadata
+    )
+
+    print(f"\n📁 Files saved:")
+    print(f"  📝 Markdown: {markdown_path}")
