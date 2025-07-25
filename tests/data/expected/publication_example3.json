@@ -1,0 +1,61 @@
+{
+  "title": "Understanding the Differences: Repeatability vs. Reproducibility in AI Research",
+  "tl_dr": "The article clarifies the difference between repeatability (regenerating results) and reproducibility (independent verification of findings) in AI/ML research, emphasizing that many researchers confuse the two. It critiques the reliance on one-click pipelines as a false validation and advocates for sharing well-documented, modular code to facilitate deeper investigation and verification of results. The authors call for a cultural shift towards rigorous validation practices in the field.",
+  "tags": {
+    "task": [
+      "reproducibility",
+      "repeatability",
+      "replicability",
+      "direct replicability",
+      "conceptual replicability"
+    ],
+    "tool_or_framework": ["modular code", "github"],
+    "use_case": ["transparent design", "open-ended exploration"]
+  },
+  "references": {
+    "search_queries": [
+      "difference between repeatability and reproducibility in AI research",
+      "importance of independent validation in AI reproducibility",
+      "examples of direct and conceptual replicability in machine learning studies",
+      "best practices for sharing well-documented code in AI research"
+    ],
+    "selected_references": [
+      {
+        "title": "What is the Difference Between Repeatability and Reproducibility?",
+        "url": "https://www.labmate-online.com/news/news-and-views/5/breaking-news/what-is-the-difference-between-repeatability-and-reproducibility/30638",
+        "page_content": "Repeatability measures the variation in measurements taken by a single instrument or person under the same conditions, while reproducibility measures whether"
+      },
+      {
+        "title": "Reproducibility vs Replicability | Difference & Examples - Scribbr",
+        "url": "https://www.scribbr.com/methodology/reproducibility-repeatability-replicability/",
+        "page_content": "Replicability or repeatability refers to reconducting the entire study to ensure the outcomes' reliability. Reproducibility refers to"
+      },
+      {
+        "title": "Repeatability vs. Reproducibility - Technology Networks",
+        "url": "https://www.technologynetworks.com/informatics/articles/repeatability-vs-reproducibility-317157",
+        "page_content": "If an observation is reproducible, it should be able to be made by a different team repeating the experiment using the same experimental data and methods, under the same operating conditions, in the same or a different location, on multiple trials..."
+      },
+      {
+        "title": "What is reproducibility in artificial intelligence and machine learning ...",
+        "url": "https://onlinelibrary.wiley.com/doi/full/10.1002/aaai.70004",
+        "page_content": "Importantly, validating the correctness of the implementation in both dependent and independent reproducibility distinguishes these efforts from mere repeatability, enhancing the study's scientific rigor."
+      },
+      {
+        "title": "Reproducible AI: Why it Matters & How to Improve it in 2025",
+        "url": "https://research.aimultiple.com/reproducible-ai/",
+        "page_content": "This principle is equally vital in artificial intelligence (AI) and machine learning (ML) applications, where the ability to reproduce outcomes ensures the reliability and robustness of models and findings..."
+      },
+      {
+        "title": "What is Reproducibility in Artificial Intelligence and Machine ... - arXiv",
+        "url": "https://arxiv.org/html/2407.10239v1",
+        "page_content": "Reproducibility involves external researchers validating the correctness of an original experiment’s findings by following the documented experimental setup..."
+      },
+      {
+        "title": "What is reproducibility in artificial intelligence and machine learning ...",
+        "url": "https://onlinelibrary.wiley.com/doi/full/10.1002/aaai.70004",
+        "page_content": "Unlike direct replicability, which alters only the implementation, conceptual replicability involves redesigning the experimental setup itself."
+      }
+    ]
+  },
+  "manager_brief": "**Internal Brief: Article on Reproducibility in AI Research**\n\nCentral Theme and Goals:\nThe article addresses the critical distinction between \"repeatability\" and \"reproducibility\" in AI and machine learning research. It argues that many researchers mistakenly equate the ability to regenerate results through automated scripts with true validation of findings. The goal is to emphasize the need for a higher standard in research practices, moving beyond mere automated re-runs to deeper, more rigorous validation processes.\n\nKey Concepts and Contributions:\n1. Definitions: The article differentiates between repeatability (same experiment, same results) and reproducibility (independent validation of findings). It also introduces the idea of replicability, which examines whether findings hold under varying conditions.\n2. Critique of Current Practices: It highlights the issue of one-click pipelines providing a false sense of validation and encourages critical scrutiny of results.\n3. Recommendations for Improvement: The authors advocate for sharing modular, well-documented code that facilitates real investigation and exploration rather than simple re-execution.\n\nImportant Context:\nAgents should remain aligned on the need to clarify the definitions of reproducibility within the AI/ML community and advocate for enhanced research practices. The article encourages a culture of verification and transparency in research methods.\n\nNote: The content is straightforward and does not require embellishment or exaggeration of its significance."
+}

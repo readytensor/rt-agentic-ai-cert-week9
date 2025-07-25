@@ -1,0 +1,47 @@
+{
+  "title": "Churn Prediction with Gradient Boosting: A Practical Approach for Retention Strategies",
+  "tl_dr": "This project developed a churn prediction model using a gradient boosting classifier, leveraging customer behavior and demographic data to identify at-risk customers early. The model achieved an AUC score of 0.89 and includes code and datasets for reproducibility, making it adaptable for similar business contexts, particularly in telecom and subscription services.",
+  "tags": {
+    "algorithm": ["gradient boosting"],
+    "dataset": ["customer behavior", "demographic data"],
+    "industry": ["telecom", "subscription-based services"],
+    "task": ["churn prediction"],
+    "use_case": ["retention strategies"]
+  },
+  "references": {
+    "search_queries": [
+      "churn prediction model gradient boosting classifier",
+      "customer retention strategies using churn prediction",
+      "feature engineering in churn prediction models",
+      "performance metrics in churn prediction AUC score"
+    ],
+    "selected_references": [
+      {
+        "title": "An efficient churn prediction model using gradient boosting machine ...",
+        "url": "https://www.nature.com/articles/s41598-023-41093-6",
+        "page_content": "This paper introduces the Enhanced Gradient Boosting Model (EGBM), which uses a Support Vector Machine with a Radial Basis Function kernel (SVMRBF) as a base learner and exponential loss function to enhance the learning process of the GBM. CP-EGBM is a new model with high predictive performance that..."
+      },
+      {
+        "title": "Customer Churn: A Classification Problem to Solve with Python",
+        "url": "https://medium.com/data-bistrot/customer-churn-a-classification-problem-to-solve-with-python-31f572652246",
+        "page_content": "We will cover data preprocessing, feature selection, model building, and evaluation of multiple algorithms to predict customer churn effectively. This data will be used to build predictive models for customer churn. The pipeline combines data preprocessing, oversampling with SMOTE, and hyperparamete..."
+      },
+      {
+        "title": "Customer churn prediction in telecom sector using machine learning ...",
+        "url": "https://www.sciencedirect.com/science/article/pii/S2666720723001443",
+        "page_content": "This system uses classification techniques to find out the leave subscriptions and collects the reasons behind the leave subscription of customers in the telecom industry. The major goal of this system is to analyze the diversified machine learning algorithms which are required to develop customer c..."
+      },
+      {
+        "title": "Enhancing customer retention with machine learning: A comparative ...",
+        "url": "https://www.sciencedirect.com/science/article/pii/S2667096825000138",
+        "page_content": "Models with higher ROC AUC scores, such as Random Forest and XGBoost, provide insights into customer behavior and help in crafting effective retention strategies."
+      },
+      {
+        "title": "ROC-AUC: The Ultimate Metric for Classification - Number Analytics",
+        "url": "https://www.numberanalytics.com/blog/roc-auc-metric-for-classification",
+        "page_content": "A good ROC-AUC score is typically considered to be close to 1, indicating excellent model performance. This metric is crucial for evaluating the effectiveness of the churn prediction model."
+      }
+    ]
+  },
+  "manager_brief": "**Internal Brief: Churn Prediction Model Project**\n\nCentral Theme and Goals:\nThe project focuses on developing a churn prediction model using a gradient boosting classifier. The primary goal is to predict customer churn by analyzing customer behavior and demographic data, enabling businesses to implement targeted retention strategies.\n\nKey Concepts and Contributions:\n- The model utilizes features such as contract type, service usage, and support interactions.\n- It underwent preprocessing and feature engineering before evaluation.\n- Performance metrics include precision, recall, and ROC-AUC, with an achieved AUC score of 0.89.\n- The model is designed to identify at-risk customers early.\n\nAreas of Emphasis:\n- The project's reproducibility is emphasized, with included code and datasets.\n- The pipeline's adaptability for similar business contexts, particularly in telecom and subscription-based services.\n\nImportant Context:\nAgents should ensure that all components of the article reflect the technical details and findings accurately. Do not inflate the scope or significance of the project; the focus is on a practical application in churn prediction rather than broader implications."
+}

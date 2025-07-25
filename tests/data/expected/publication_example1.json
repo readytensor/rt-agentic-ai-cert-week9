@@ -1,0 +1,85 @@
+{
+  "title": "Understanding Variational Auto-Encoders: Applications and PyTorch Implementation",
+  "tldr": "Variational Auto-Encoders (VAEs) are generative models that encode input data into a latent space for reconstruction. They are effective for tasks such as anomaly detection, synthetic data generation, and missing data imputation, utilizing variational inference for training. VAEs can be implemented using PyTorch.",
+  "selected_tags": [
+    {
+      "name": "variational auto-encoder",
+      "type": "algorithm"
+    },
+    {
+      "name": "variational inference",
+      "type": "algorithm"
+    },
+    {
+      "name": "mnist",
+      "type": "dataset"
+    },
+    {
+      "name": "anomaly detection",
+      "type": "task"
+    },
+    {
+      "name": "synthetic data generation",
+      "type": "task"
+    },
+    {
+      "name": "missing data imputation",
+      "type": "task"
+    }
+  ],
+  "reference_search_queries": [
+    "Variational Autoencoders overview and mechanism",
+    "Applications of VAEs in anomaly detection using MNIST dataset",
+    "Variational inference principles in training Variational Autoencoders",
+    "Implementing Variational Autoencoders with PyTorch tutorials and examples"
+  ],
+  "selected_references": [
+    {
+      "title": "What is Variational Autoencoders ? - Analytics Vidhya",
+      "url": "https://www.analyticsvidhya.com/blog/2023/07/an-overview-of-variational-autoencoders/",
+      "page_content": "A Variational Autoencoder (VAE) is a deep learning model that generates new data by learning a probabilistic representation of input data."
+    },
+    {
+      "title": "[1906.02691] An Introduction to Variational Autoencoders - arXiv",
+      "url": "https://arxiv.org/abs/1906.02691",
+      "page_content": "Variational autoencoders provide a principled framework for learning deep latent-variable models and corresponding inference models."
+    },
+    {
+      "title": "Deploy variational autoencoders for anomaly detection with ... - AWS",
+      "url": "https://aws.amazon.com/blogs/machine-learning/deploying-variational-autoencoders-for-anomaly-detection-with-tensorflow-serving-on-amazon-sagemaker/",
+      "page_content": "We train the VAE model on normal data, then test the model on anomalies to observe the reconstruction error. We can train the model to learn the pattern of normal data, so when anomalies happened, the model can identify the data that doesn’t fall into the pattern."
+    },
+    {
+      "title": "Applying VAEs to MNIST - Ludovico Buizza - Medium",
+      "url": "https://ludovico-buizza.medium.com/generating-things-with-vaes-882c6e3b688d",
+      "page_content": "In this article I will attempt to give a plain English introduction to variational auto encoders (VAEs). I will also apply these principles to the MNIST."
+    },
+    {
+      "title": "What is a Variational Autoencoder? - IBM",
+      "url": "https://www.ibm.com/think/topics/variational-autoencoder",
+      "page_content": "Variational autoencoders (VAEs) are generative models used in machine learning (ML) to generate new data in the form of variations of the input data they’re trained on."
+    },
+    {
+      "title": "Variational Autoencoder (VAE) — PyTorch Tutorial | by Reza Kalantar",
+      "url": "https://medium.com/@rekalantar/variational-auto-encoder-vae-pytorch-tutorial-dce2d2fe0f5f",
+      "page_content": "In contrast, a variational autoencoder (VAE) converts the input data to a variational representation vector (as the name suggests), where the elements of this vector represent different attributes about the input data distribution."
+    },
+    {
+      "title": "A Deep Dive into Variational Autoencoders with PyTorch",
+      "url": "https://pyimagesearch.com/2023/10/02/a-deep-dive-into-variational-autoencoders-with-pytorch/",
+      "page_content": "Next, we define some post-training analysis plot paths for storing visualization results such as `LATENT_SPACE_PLOT`, `IMAGE_GRID_EMBEDDINGS_PLOT`, `LINEARLY_SAMPLED_RECONSTRUCTIONS_PLOT`, and `NORMALLY_SAMPLED_RECONSTRUCTIONS_PLOT`."
+    }
+  ],
+  "manager_brief": "**Internal Brief: Variational Auto-Encoders (VAEs) Article**\n\n**Central Theme and Goals:**  \nThe article will focus on Variational Auto-Encoders (VAEs), explaining their function as generative models that encode input data into a latent space for reconstruction. The objective is to provide a clear understanding of VAEs, their applications, and implementation using PyTorch.\n\n**Key Concepts and Contributions:**\n\n- Definition and mechanics of VAEs, including encoding and decoding processes.\n- Application areas such as anomaly detection (e.g., on MNIST datasets), synthetic data generation, and missing data imputation.\n- Overview of the training process based on variational inference, including minimizing reconstruction loss and regularizing the latent space distribution.\n\n**Areas of Emphasis:**\n\n- Practical implementation of VAEs using PyTorch.\n- Clear explanations of technical terms like latent space and variational inference.\n\n**Important Context:**  \nThe information provided is straightforward and does not delve into advanced complexities of VAEs. Agents should refrain from inflating the article's depth or significance. Focus on clarity and accessibility for readers seeking foundational knowledge of VAEs and their applications.",
+  "manager_brief_expected_keywords": [
+    "vae",
+    "variational autoencoder",
+    "variational inference",
+    "latent space",
+    "reconstruction",
+    "mnist",
+    "anomaly detection",
+    "synthetic data",
+    "missing data"
+  ]
+}
