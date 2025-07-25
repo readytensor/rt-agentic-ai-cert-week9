@@ -116,8 +116,14 @@ def _print_a3_response_rich(response: Dict[str, Any], title: str) -> Dict[str, A
         for i, ref in enumerate(selected_references, 1):
             title_ref = ref.get("title", "N/A")
             url = ref.get("url", "N/A")
+            content = ref.get("page_content", "").strip()
+            content_preview = content[:300] + "..." if len(content) > 300 else content
+
             refs_content += f"[bold]{i}.[/bold] {title_ref}\n"
-            refs_content += f"   [dim]🔗 {url}[/dim]\n\n"
+            refs_content += f"   [dim]🔗 {url}[/dim]\n"
+            if content_preview:
+                refs_content += f"   📄 [italic]{content_preview}[/italic]\n"
+            refs_content += "\n"
     else:
         refs_content += "[dim](No references selected)[/dim]"
 
