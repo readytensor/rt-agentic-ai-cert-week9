@@ -3,6 +3,7 @@ langchain_groq~=0.3.6
 langchain_openai~=0.3.28
 langchain_community~=0.3.27
 langchain_tavily~=0.2.10
+langchain_huggingface~=0.2.0
 python-dotenv~=1.1.1
 pyyaml~=6.0.2
 langgraph~=0.5.3
@@ -20,4 +21,4 @@ spacy~=3.8.7
 https://github.com/explosion/spacy-models/releases/download/en_core_web_trf-3.8.0/en_core_web_trf-3.8.0-py3-none-any.whl 
 guardrails-ai~=0.6.6
 rich~=13.9.4
-giskard
+# giskard
