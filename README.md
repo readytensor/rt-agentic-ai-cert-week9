@@ -96,14 +96,27 @@ rt-agentic-ai-cert-week9/
 ├── lessons/                                   # Lesson notebooks and supplementary content
 ├── outputs/                                   # Output logs, results, or final artifacts
 ├── tests/
-│   ├── test_graphs/                           # Tests for LangGraph wiring and flows
+│   ├── data/                                  # Input test and expected results data files for tests
+│   ├── integration_tests/
+│   │   ├── utils/
+│   │   │   └── similarity.py                  # Utility function for similarity checks
+│   │   ├── conftest.py
+│   │   ├── test_a3_nodes_integration.py       # Integration tests for A3 system nodes
+│   │   └── test_tag_gen_nodes_integration.py  # Integration tests for tag generation nodes
+│   ├── test_graphs/
 │   ├── test_nodes/
-│   │   ├── a3_system/                         # Unit tests for A3 system nodes
-│   │   ├── tag_generation/                    # Unit tests for tag generation nodes
-│   │   └── conftest.py                        # Shared fixtures for node tests
-│   ├── test_states/                           # Tests for state initializers and logic
-│   ├── test_utils/                            # Tests for prompt builder, node utils, etc.
-│   └── conftest.py                            # Global pytest fixtures
+│   │   ├── a3_system/                         # Unit tests for A3 system nodes. LLM calls mocked
+│   │   ├── tag_generation/                    # Unit tests for tag gen nodes. LLM calls mocked
+│   │   └── conftest.py
+│   ├── test_states/
+│   │   ├── conftest.py
+│   │   ├── test_a3_state.py                   # Unit tests for A3 state initialization
+│   │   └── test_tag_generation_state.py       # Unit tests for tag generation state initialization
+│   ├── test_utils/
+│   │   ├── conftest.py
+│   │   ├── test_node_utils.py                 # Unit tests for node prompt/message helpers
+│   │   └── test_prompt_builder.py             # Unit tests for prompt construction helpers
+│   └── conftest.py
 ├── .env.example                               # Example environment file (e.g., API keys)
 ├── .gitignore
 ├── LICENSE
@@ -140,47 +153,72 @@ rt-agentic-ai-cert-week9/
 
 ---
 
-## Running the Evaluation Examples
+## Usage
 
-Each code example is runnable as a standalone script:
+While this week's focus is on testing, safety, and evaluation, the multi-agent systems themselves were developed in earlier modules. You can still run the full systems directly from this repo for experimentation or testing purposes.
+
+### ▶️ Run the A3 (Agentic Authoring Assistant) System
+
+This is the multi-agent writing assistant system built in Module 2, used here as a case study for testing.
+
+```bash
+python code/run_a3_system.py
+```
+
+This will run the A3 system, which includes multiple agents collaborating to generate and refine content based on the provided input. Output is both printed to the console and saved to the `outputs/` directory.
+
+### ▶️ Run the Tag Generation System
+
+This is a simpler sub-system (part of A3 system) that extracts tags from input text and selects the most relevant ones.
+
+```bash
+python code/run_tag_gen_system.py
+```
+
+This will run the tag generation agent, which processes input text to generate and select relevant tags. Output is printed to the console and saved to the `outputs/` directory.
 
 ---
 
 ## Tests
 
-This repo includes comprehensive unit tests for all major components, including nodes, state management, and utility functions.
+This repository includes comprehensive tests for all major components — including LangGraph nodes, state objects, utility functions, and multi-agent workflows.
+
+### Unit Tests
+
+Run all unit tests (LLM calls are mocked):
 
 ```bash
 pytest
 ```
 
-Test organization:
+Note this will exclude integration tests by default.
 
-```txt
-tests/
-├── test_graphs/                            # Tests for LangGraph-based workflows
-├── test_nodes/
-│   ├── a3_system/                          # Unit tests for A3 system nodes (e.g., manager, reviewer)
-│   ├── tag_generation/                     # Unit tests for tag generation nodes (gazetteer, spaCy, LLM, etc.)
-│   └── conftest.py                         # Node-level shared fixtures
-├── test_states/                            # Tests for state initialization
-├── test_utils/                             # Tests for utilities like prompt builders and tavily search function
-└── conftest.py                             # Global fixtures
+To run a specific test folder (e.g., tag generation nodes):
+
+```bash
+pytest tests/test_nodes/tag_generation/
 ```
 
-- To run a specific group of tests:
+### Integration Tests
 
-  ```bash
-  pytest tests/test_nodes/tag_generation/
-  ```
+Integration tests are explicitly marked with `@pytest.mark.integration` and must be run separately:
 
-- To see detailed output with logs and print statements:
+```bash
+pytest -m integration
+```
 
-  ```bash
-  pytest -s -v
-  ```
+These tests validate:
 
-All tests use `pytest` and follow best practices for mocking LLM calls when needed.
+- Execution of individual agents in A3 and tag generation systems
+- Semantic alignment of LLM outputs (e.g., using embedding-based checks)
+
+### Code Coverage
+
+To measure test coverage and generate a report:
+
+```bash
+pytest --cov=code --cov-report=html
+```
 
 ---
 
