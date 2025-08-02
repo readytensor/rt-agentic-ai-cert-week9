@@ -7,6 +7,7 @@
 [🏠 Home - All Lessons](https://app.readytensor.ai/hubs/ready_tensor_certifications)
 
 [⬅️ Previous - Guardrails Tutorial](https://app.readytensor.ai/publications/tiBt9Nevyqrw)
+[➡️ Next - Agentic System Testing Case Study](https://app.readytensor.ai/publications/uDLdzgPAQ5BZ)
 
 ---
 
@@ -15,6 +16,22 @@
 # TL;DR
 
 Giskard is a robust AI testing framework designed to continuously evaluate and secure your conversational LLM agents. It detects hallucinations, security vulnerabilities, biases, and misinformation before your models hit production. In this lesson, you’ll discover how Giskard enables ongoing risk detection, fosters cross-team collaboration, and integrates seamlessly into your AI deployment pipeline to keep your systems safe and trustworthy.
+
+---
+
+--DIVIDER--
+
+:::info{title="Info"}
+
+ <h2>Lesson Resources</h2>
+ 
+ **📁 Code Repository**: Explore the full implementation and examples from this lesson in the [GitHub repo](https://github.com/readytensor/rt-agentic-ai-cert-week9). You'll find scripts for wrapping your model, creating datasets, and running Giskard scans for hallucinations, bias, and prompt injection.
+ 
+ **🎥 Video Walkthrough**: A detailed video demo is included later in this lesson. It walks you through setting up Giskard, interpreting scan results, and simulating real-world attacks using Giskard’s red teaming playground.
+ 
+ :::
+ 
+---
 
 --DIVIDER--
 
@@ -28,13 +45,15 @@ Modern GenAI applications are powerful but come with hidden pitfalls.
 
 Now it’s time to move from identifying these vulnerabilities to actively preventing them, with a scalable testing platform trusted by enterprises worldwide.
 
-![giskard.png](giskard.png)
+---
 
 --DIVIDER--
 
 # What Is Giskard?
 
 [Giskard](https://giskard.ai) is an open-source Python library and enterprise-ready toolset focused on AI quality assurance—testing your LLM agents continuously to catch errors, bias, and security flaws at every stage of their lifecycle.
+
+![giskard.png](giskard.png)
 
 Think of Giskard as your AI’s continuous quality monitor: it runs **automated and customizable tests** based on your business context, detects emerging vulnerabilities, and alerts your teams before issues reach users.
 
@@ -46,6 +65,8 @@ The platform enables:
 - **Independent validation and security** with role-based access controls, on-premise deployment options, and GDPR-compliant infrastructure.
 
 Whether you’re a developer, QA engineer, or product manager, Giskard empowers you to build trustworthy AI systems that meet real-world safety and compliance demands.
+
+---
 
 --DIVIDER--
 
@@ -63,11 +84,15 @@ Its evaluation workflow includes:
 
 With Giskard, AI teams collaborate more effectively to verify model safety, validity, and fairness under evolving conditions.
 
+---
+
 --DIVIDER--
 
 # Getting started with Giskard
 
-You wrap your conversational LLM model as a Giskard `Model` by defining a prediction function, create a dataset of test queries, then run built-in scan functions to detect issues like hallucinations, prompt injections, or bias. You can visualize results right away or integrate scans into CI/CD for continuous safety checks.
+Let’s walk through how to apply Giskard in practice.
+
+You’ll learn how to wrap your LLM pipeline in a testable interface, define a dataset of queries, and run vulnerability scans that flag issues like hallucinations, prompt injections, bias, and more. By the end, you’ll have a working evaluation loop you can integrate into notebooks or CI/CD pipelines.
 
 # Step-by-Step: Secure Your LLM Agent with Giskard
 
@@ -152,6 +177,28 @@ Once comfortable, connect your models and datasets to the Giskard Hub (cloud or 
 
 This approach brings continuous, automated safety assurance into your LLM workflows, letting you detect and fix issues like hallucinations, prompt injections, and bias **before** users ever see them.
 
+---
+
+--DIVIDER--
+
+# Watch the Walkthrough: Testing Agentic AI with Giskard 🎥
+
+Want to see Giskard in action before diving into code?
+
+In this companion video, we walk through how to:
+
+- Wrap your LLM pipeline for Giskard testing
+- Detect hallucinations, prompt injections, and psychofancy
+- Interpret Giskard’s scan results, including controversial outputs and robustness issues
+- Create logical checks for automated prompt injection detection
+- Explore Giskard’s red teaming playground to stress-test real LLM agents
+
+It’s a hands-on demo using a real RAG-based assistant — great for anyone working on agent safety, evaluation, or preparing for production deployment.
+
+:::youtube[Title]{#0HLA5CSiut8}
+
+---
+
 --DIVIDER--
 
 # Final Takeaway
@@ -165,5 +212,6 @@ Giskard goes beyond traditional AI evaluation, providing a **continuous, collabo
 [🏠 Home - All Lessons](https://app.readytensor.ai/hubs/ready_tensor_certifications)
 
 [⬅️ Previous - Guardrails Tutorial](https://app.readytensor.ai/publications/tiBt9Nevyqrw)
+[➡️ Next - Agentic System Testing Case Study](https://app.readytensor.ai/publications/uDLdzgPAQ5BZ)
 
 ---
