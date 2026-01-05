@@ -1,6 +1,6 @@
-# Ready Tensor Agentic AI Certification – Week 9
+# Ready Tensor Agentic AI Certification – Unit 9
 
-This repository contains lesson materials, code examples, and evaluation scripts for **Week 9** of the [Agentic AI Developer Certification Program](https://app.readytensor.ai/publications/HrJ0xWtLzLNt) by Ready Tensor. This week is about testing, safety and security in agentic AI systems.
+This repository contains lesson materials, code examples, and evaluation scripts for **Unit 9** of the [Agentic AI Developer Certification Program](https://app.readytensor.ai/publications/HrJ0xWtLzLNt) by Ready Tensor. This week is about testing, safety and security in agentic AI systems.
 
 **This repo is work in progress and will be updated with more content.**
 
@@ -62,7 +62,7 @@ Apply everything you've learned by implementing a complete testing suite for you
 ## Repository Structure
 
 ```txt
-rt-agentic-ai-cert-week9/
+rt-agentic-ai-cert-unit9/
 ├── code/
 │   ├── consts.py                             # Shared constant definitions
 │   ├── display_utils.py                      # Formatting helpers for output visualization
